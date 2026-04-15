@@ -1,0 +1,57 @@
+{
+  "kind": "collectionType",
+  "collectionName": "heroes",
+  "info": {
+    "singularName": "hero",
+    "pluralName": "heroes",
+    "displayName": "Hero",
+    "description": "Per-page hero: title, subtitle, slides, CTAs"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "page": {
+      "type": "string",
+      "required": true,
+      "unique": true
+    },
+    "title": { "type": "string", "required": true },
+    "subtitle": { "type": "text", "required": true },
+    "slides": {
+      "type": "media",
+      "multiple": true,
+      "required": false,
+      "allowedTypes": ["images"]
+    },
+    "ctaButtons": {
+      "type": "component",
+      "repeatable": true,
+      "component": "hero.cta-button"
+    },
+    "promoVideo": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": ["videos"]
+    },
+    "seo": {
+      "type": "component",
+      "repeatable": false,
+      "component": "seo.entry",
+      "required": false
+    }
+  },
+  "config": {
+    "metadatas": {
+      "slides": {
+        "edit": {
+          "label": "Slides (1600x900px each)",
+          "description": "Each slide about 1600×900px, ≤250 KB. Add multiple for rotation."
+        },
+        "list": { "label": "Slides (1600x900px each)" }
+      }
+    }
+  }
+}

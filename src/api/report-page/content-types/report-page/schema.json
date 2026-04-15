@@ -1,0 +1,26 @@
+{
+  "kind": "singleType",
+  "collectionName": "report_page",
+  "info": {
+    "singularName": "report-page",
+    "pluralName": "report-pages",
+    "displayName": "Report Page",
+    "description": "Report portal config and fallback sample values"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "samplePatientName": { "type": "string", "required": false },
+    "sampleReportDate": { "type": "string", "required": false },
+    "sampleStatus": { "type": "string", "required": false },
+    "supportPhone": { "type": "string", "required": false },
+    "seo": {
+      "type": "component",
+      "repeatable": false,
+      "component": "seo.entry",
+      "required": false
+    }
+  }
+}

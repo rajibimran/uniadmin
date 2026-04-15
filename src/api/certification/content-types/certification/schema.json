@@ -1,0 +1,40 @@
+{
+  "kind": "collectionType",
+  "collectionName": "certifications",
+  "info": {
+    "singularName": "certification",
+    "pluralName": "certifications",
+    "displayName": "Certification"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "name": {
+      "type": "string",
+      "required": true
+    },
+    "logo": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": ["images"]
+    },
+    "order": {
+      "type": "integer",
+      "default": 0
+    }
+  },
+  "config": {
+    "metadatas": {
+      "logo": {
+        "edit": {
+          "label": "Logo (180x60px)",
+          "description": "Optional badge; about 180×60px, ≤60 KB. SVG or PNG."
+        },
+        "list": { "label": "Logo (180x60px)" }
+      }
+    }
+  }
+}

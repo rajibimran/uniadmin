@@ -1,0 +1,28 @@
+{
+  "kind": "singleType",
+  "collectionName": "privacy_page",
+  "info": {
+    "singularName": "privacy-page",
+    "pluralName": "privacy-pages",
+    "displayName": "Privacy Page",
+    "description": "Privacy policy page content blocks and SEO"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "title": { "type": "string", "required": false },
+    "sections": {
+      "type": "component",
+      "repeatable": true,
+      "component": "privacy.section"
+    },
+    "seo": {
+      "type": "component",
+      "repeatable": false,
+      "component": "seo.entry",
+      "required": false
+    }
+  }
+}

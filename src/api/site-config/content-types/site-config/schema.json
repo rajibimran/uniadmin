@@ -1,0 +1,49 @@
+{
+  "kind": "singleType",
+  "collectionName": "site_config",
+  "info": {
+    "singularName": "site-config",
+    "pluralName": "site-configs",
+    "displayName": "Site Config",
+    "description": "Global site settings: branding, contact, social"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "siteName": { "type": "string", "required": true },
+    "tagline": { "type": "string", "required": true },
+    "logo": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": ["images", "files"]
+    },
+    "phone": { "type": "string", "required": true },
+    "email": { "type": "email", "required": true },
+    "address": { "type": "text", "required": true },
+    "workingHours": { "type": "string", "required": true },
+    "googleMapsEmbed": { "type": "text", "required": false },
+    "facebookUrl": { "type": "string", "required": false },
+    "instagramUrl": { "type": "string", "required": false },
+    "linkedinUrl": { "type": "string", "required": false },
+    "defaultSeo": {
+      "type": "component",
+      "repeatable": false,
+      "component": "seo.entry",
+      "required": false
+    }
+  },
+  "config": {
+    "metadatas": {
+      "logo": {
+        "edit": {
+          "label": "Logo (50x65px)",
+          "description": "Resize to about 50×65px; keep file small (≤50 KB). SVG or PNG."
+        },
+        "list": { "label": "Logo (50x65px)" }
+      }
+    }
+  }
+}

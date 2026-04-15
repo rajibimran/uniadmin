@@ -1,0 +1,12 @@
+{
+  "collectionName": "components_service_document_items",
+  "info": {
+    "displayName": "Document Item",
+    "description": "Required document for a service"
+  },
+  "options": {},
+  "attributes": {
+    "name": { "type": "string", "required": true },
+    "required": { "type": "boolean", "default": true, "required": true }
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "collectionName": "components_service_timeline_steps",
+  "info": {
+    "displayName": "Timeline Step",
+    "description": "Process step for service detail page"
+  },
+  "options": {},
+  "attributes": {
+    "step": { "type": "integer", "required": true, "min": 1 },
+    "title": { "type": "string", "required": true },
+    "description": { "type": "text", "required": true }
+  }
+}

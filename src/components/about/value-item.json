@@ -1,0 +1,30 @@
+{
+  "collectionName": "components_about_value_items",
+  "info": {
+    "displayName": "Value Item",
+    "description": "Why choose us card with Strapi media image"
+  },
+  "options": {},
+  "attributes": {
+    "title": { "type": "string", "required": true },
+    "desc": { "type": "text", "required": true },
+    "alt": { "type": "string", "required": true },
+    "img": {
+      "type": "media",
+      "multiple": false,
+      "required": true,
+      "allowedTypes": ["images"]
+    }
+  },
+  "config": {
+    "metadatas": {
+      "img": {
+        "edit": {
+          "label": "Image (400x250px)",
+          "description": "Card image about 400×250px, ≤100 KB."
+        },
+        "list": { "label": "Image (400x250px)" }
+      }
+    }
+  }
+}

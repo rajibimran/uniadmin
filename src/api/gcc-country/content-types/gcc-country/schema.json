@@ -1,0 +1,40 @@
+{
+  "kind": "collectionType",
+  "collectionName": "gcc_countries",
+  "info": {
+    "singularName": "gcc-country",
+    "pluralName": "gcc-countries",
+    "displayName": "GCC Country"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "name": {
+      "type": "string",
+      "required": true
+    },
+    "flag": {
+      "type": "media",
+      "multiple": false,
+      "required": true,
+      "allowedTypes": ["images"]
+    },
+    "order": {
+      "type": "integer",
+      "default": 0
+    }
+  },
+  "config": {
+    "metadatas": {
+      "flag": {
+        "edit": {
+          "label": "Flag (80x50px)",
+          "description": "About 80×50px, ≤40 KB. Used in the GCC strip on the home page."
+        },
+        "list": { "label": "Flag (80x50px)" }
+      }
+    }
+  }
+}

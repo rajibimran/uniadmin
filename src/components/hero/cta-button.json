@@ -1,0 +1,18 @@
+{
+  "collectionName": "components_hero_cta_buttons",
+  "info": {
+    "displayName": "CTA Button",
+    "description": "Hero call-to-action button"
+  },
+  "options": {},
+  "attributes": {
+    "label": { "type": "string", "required": true },
+    "href": { "type": "string", "required": true },
+    "variant": {
+      "type": "enumeration",
+      "enum": ["primary", "secondary"],
+      "default": "primary",
+      "required": true
+    }
+  }
+}

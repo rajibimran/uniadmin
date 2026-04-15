@@ -1,0 +1,68 @@
+{
+  "kind": "collectionType",
+  "collectionName": "country_guidelines",
+  "info": {
+    "singularName": "country-guideline",
+    "pluralName": "country-guidelines",
+    "displayName": "Country Guideline"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "name": {
+      "type": "string",
+      "required": true
+    },
+    "countryId": {
+      "type": "string",
+      "required": true
+    },
+    "flag": {
+      "type": "media",
+      "multiple": false,
+      "required": true,
+      "allowedTypes": ["images"]
+    },
+    "processingTime": {
+      "type": "string",
+      "required": true
+    },
+    "approvalNote": {
+      "type": "string",
+      "required": true
+    },
+    "expertTip": {
+      "type": "text",
+      "required": true
+    },
+    "mandatoryTests": {
+      "type": "text",
+      "required": true
+    },
+    "rejectionCriteria": {
+      "type": "text",
+      "required": true
+    },
+    "specialRules": {
+      "type": "text",
+      "required": true
+    },
+    "visaCategories": {
+      "type": "text",
+      "required": true
+    }
+  },
+  "config": {
+    "metadatas": {
+      "flag": {
+        "edit": {
+          "label": "Flag (80x50px)",
+          "description": "Small flag icon; about 80×50px, ≤40 KB (PNG or WebP)."
+        },
+        "list": { "label": "Flag (80x50px)" }
+      }
+    }
+  }
+}

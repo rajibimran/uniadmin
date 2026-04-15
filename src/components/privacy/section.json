@@ -1,0 +1,12 @@
+{
+  "collectionName": "components_privacy_sections",
+  "info": {
+    "displayName": "Section",
+    "description": "Privacy policy section block"
+  },
+  "options": {},
+  "attributes": {
+    "heading": { "type": "string", "required": true },
+    "body": { "type": "text", "required": true }
+  }
+}

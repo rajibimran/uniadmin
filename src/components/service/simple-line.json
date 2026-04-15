@@ -1,0 +1,25 @@
+{
+  "collectionName": "components_service_simple_lines",
+  "info": {
+    "displayName": "List item",
+    "description": "One line for Benefits or Tests — use Add an entry for each bullet."
+  },
+  "options": {},
+  "attributes": {
+    "text": {
+      "type": "string",
+      "required": true
+    }
+  },
+  "config": {
+    "metadatas": {
+      "text": {
+        "edit": {
+          "label": "Line",
+          "description": "Single benefit or test name (plain text — no JSON)."
+        },
+        "list": { "label": "Line" }
+      }
+    }
+  }
+}

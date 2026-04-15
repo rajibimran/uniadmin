@@ -1,0 +1,58 @@
+{
+  "kind": "collectionType",
+  "collectionName": "equipment_items",
+  "info": {
+    "singularName": "equipment-item",
+    "pluralName": "equipment-items",
+    "displayName": "Equipment Item"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "slNo": {
+      "type": "string",
+      "required": true
+    },
+    "name": {
+      "type": "string",
+      "required": true
+    },
+    "model": {
+      "type": "string",
+      "required": true
+    },
+    "qty": {
+      "type": "string",
+      "required": true
+    },
+    "origin": {
+      "type": "string",
+      "required": false
+    },
+    "status": {
+      "type": "string",
+      "required": false
+    },
+    "image": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": [
+        "images"
+      ]
+    }
+  },
+  "config": {
+    "metadatas": {
+      "image": {
+        "edit": {
+          "label": "Photo (800x600px)",
+          "description": "About 800×600px, ≤120 KB."
+        },
+        "list": { "label": "Photo (800x600px)" }
+      }
+    }
+  }
+}

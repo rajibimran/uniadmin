@@ -1,0 +1,15 @@
+{
+  "collectionName": "components_services_comparison_rows",
+  "info": {
+    "displayName": "Comparison Row",
+    "description": "Single feature row for Services comparison table"
+  },
+  "options": {},
+  "attributes": {
+    "feature": { "type": "string", "required": true },
+    "physical": { "type": "string", "required": true },
+    "radiology": { "type": "string", "required": true },
+    "laboratory": { "type": "string", "required": true },
+    "vaccination": { "type": "string", "required": true }
+  }
+}

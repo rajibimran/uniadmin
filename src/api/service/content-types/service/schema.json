@@ -1,0 +1,148 @@
+{
+  "kind": "collectionType",
+  "collectionName": "services",
+  "info": {
+    "singularName": "service",
+    "pluralName": "services",
+    "displayName": "Service",
+    "description": "Medical services for listing and detail pages"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "title": { "type": "string", "required": true },
+    "slug": {
+      "type": "uid",
+      "targetField": "title",
+      "required": true
+    },
+    "icon": {
+      "type": "string",
+      "required": false
+    },
+    "iconImage": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": ["images"]
+    },
+    "description": {
+      "type": "text",
+      "required": true
+    },
+    "category": {
+      "type": "enumeration",
+      "enum": ["Examination", "Imaging", "Laboratory", "Preventive"],
+      "required": true
+    },
+    "heroImage": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": ["images"]
+    },
+    "cardImage": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": ["images"]
+    },
+    "fullDescription": {
+      "type": "richtext",
+      "required": false
+    },
+    "benefits": {
+      "type": "component",
+      "repeatable": true,
+      "component": "service.simple-line",
+      "required": false
+    },
+    "tests": {
+      "type": "component",
+      "repeatable": true,
+      "component": "service.simple-line",
+      "required": false
+    },
+    "pricing": {
+      "type": "component",
+      "repeatable": true,
+      "component": "service.pricing-row"
+    },
+    "timeline": {
+      "type": "component",
+      "repeatable": true,
+      "component": "service.timeline-step"
+    },
+    "documents": {
+      "type": "component",
+      "repeatable": true,
+      "component": "service.document-item"
+    },
+    "relatedServices": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::service.service",
+      "inversedBy": "inverseRelatedServices"
+    },
+    "inverseRelatedServices": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::service.service",
+      "mappedBy": "relatedServices"
+    },
+    "seo": {
+      "type": "component",
+      "repeatable": false,
+      "component": "seo.entry",
+      "required": false
+    }
+  },
+  "config": {
+    "metadatas": {
+      "benefits": {
+        "edit": {
+          "label": "Benefits (one line each)",
+          "description": "Click “Add an entry” for each bullet. Enter plain text only — not JSON."
+        },
+        "list": { "label": "Benefits" }
+      },
+      "tests": {
+        "edit": {
+          "label": "Tests / checks (one line each)",
+          "description": "One entry per test name. Plain text only — not JSON."
+        },
+        "list": { "label": "Tests" }
+      },
+      "heroImage": {
+        "edit": {
+          "label": "Hero image (1600x900px)",
+          "description": "Wide hero; about 1600×900px, ≤250 KB."
+        },
+        "list": { "label": "Hero image (1600x900px)" }
+      },
+      "cardImage": {
+        "edit": {
+          "label": "Card image (640x400px)",
+          "description": "Listing card; about 640×400px, ≤100 KB."
+        },
+        "list": { "label": "Card image (640x400px)" }
+      },
+      "icon": {
+        "edit": {
+          "label": "Lucide icon key (fallback)",
+          "description": "Optional. Only used if **Icon image** is empty. Examples: Stethoscope, ScanLine, TestTubes, Syringe."
+        },
+        "list": { "label": "Icon key" }
+      },
+      "iconImage": {
+        "edit": {
+          "label": "Icon image (64x64px)",
+          "description": "Preferred: upload PNG/SVG (~64×64px, ≤30 KB). Overrides Lucide key when set."
+        },
+        "list": { "label": "Icon image" }
+      }
+    }
+  }
+}

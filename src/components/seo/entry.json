@@ -1,0 +1,101 @@
+{
+  "collectionName": "components_seo_entries",
+  "info": {
+    "displayName": "SEO & schema",
+    "description": "Meta tags, Open Graph / Twitter, image alt for social preview, JSON-LD, robots, AI/snippet text."
+  },
+  "options": {},
+  "attributes": {
+    "metaTitle": {
+      "type": "string",
+      "required": true
+    },
+    "metaDescription": {
+      "type": "text",
+      "required": true
+    },
+    "metaKeywords": {
+      "type": "string",
+      "required": false
+    },
+    "canonicalPath": {
+      "type": "string",
+      "required": false
+    },
+    "openGraphImage": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": ["images"]
+    },
+    "openGraphImageAlt": {
+      "type": "string",
+      "required": false
+    },
+    "twitterCard": {
+      "type": "enumeration",
+      "enum": ["summary", "summary_large_image"],
+      "default": "summary_large_image",
+      "required": false
+    },
+    "structuredData": {
+      "type": "json",
+      "required": false
+    },
+    "noIndex": {
+      "type": "boolean",
+      "default": false,
+      "required": false
+    },
+    "snippetForAiOverview": {
+      "type": "text",
+      "required": false
+    }
+  },
+  "config": {
+    "metadatas": {
+      "metaTitle": {
+        "edit": {
+          "label": "Meta title (≤60 chars)",
+          "description": "Browser tab & search result title."
+        },
+        "list": { "label": "Meta title" }
+      },
+      "metaDescription": {
+        "edit": {
+          "label": "Meta description (≤160 chars)",
+          "description": "Search snippet; keep unique per page."
+        },
+        "list": { "label": "Meta description" }
+      },
+      "structuredData": {
+        "edit": {
+          "label": "JSON-LD (schema.org)",
+          "description": "Valid JSON object or array, e.g. {\"@context\":\"https://schema.org\",\"@type\":\"MedicalClinic\",...}"
+        },
+        "list": { "label": "JSON-LD" }
+      },
+      "snippetForAiOverview": {
+        "edit": {
+          "label": "AI / overview snippet (optional)",
+          "description": "Short neutral summary for AI answers or featured snippets (not shown as raw HTML on site unless you wire it)."
+        },
+        "list": { "label": "AI snippet" }
+      },
+      "openGraphImage": {
+        "edit": {
+          "label": "Social share image (1200x630px)",
+          "description": "Open Graph / Twitter card image; compress ≤200 KB."
+        },
+        "list": { "label": "OG image" }
+      },
+      "openGraphImageAlt": {
+        "edit": {
+          "label": "OG image alt text",
+          "description": "Describe the image for accessibility & image SEO."
+        },
+        "list": { "label": "OG alt" }
+      }
+    }
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "kind": "singleType",
+  "collectionName": "services_page",
+  "info": {
+    "singularName": "services-page",
+    "pluralName": "services-pages",
+    "displayName": "Services Page",
+    "description": "Services page config: categories and comparison rows"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "categories": { "type": "json", "required": false },
+    "comparisonRows": {
+      "type": "component",
+      "repeatable": true,
+      "component": "services.comparison-row"
+    }
+  }
+}

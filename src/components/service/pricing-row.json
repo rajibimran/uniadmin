@@ -1,0 +1,13 @@
+{
+  "collectionName": "components_service_pricing_rows",
+  "info": {
+    "displayName": "Pricing Row",
+    "description": "Service pricing line: item, price, duration"
+  },
+  "options": {},
+  "attributes": {
+    "item": { "type": "string", "required": true },
+    "price": { "type": "string", "required": true },
+    "duration": { "type": "string", "required": true }
+  }
+}

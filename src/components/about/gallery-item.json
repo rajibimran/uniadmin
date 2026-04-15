@@ -1,0 +1,28 @@
+{
+  "collectionName": "components_about_gallery_items",
+  "info": {
+    "displayName": "Gallery Item",
+    "description": "Facility image from Media Library"
+  },
+  "options": {},
+  "attributes": {
+    "image": {
+      "type": "media",
+      "multiple": false,
+      "required": true,
+      "allowedTypes": ["images"]
+    },
+    "alt": { "type": "string", "required": true }
+  },
+  "config": {
+    "metadatas": {
+      "image": {
+        "edit": {
+          "label": "Image (600x400px)",
+          "description": "About 600×400px, ≤120 KB."
+        },
+        "list": { "label": "Image (600x400px)" }
+      }
+    }
+  }
+}

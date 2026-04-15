@@ -1,0 +1,30 @@
+{
+  "kind": "singleType",
+  "collectionName": "screening_process_page",
+  "info": {
+    "singularName": "screening-process-page",
+    "pluralName": "screening-process-pages",
+    "displayName": "Screening Process Page",
+    "description": "Screening process page content and timeline"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "checklistTitle": { "type": "string", "required": false },
+    "checklistDescription": { "type": "text", "required": false },
+    "totalTimeLabel": { "type": "string", "required": false },
+    "steps": {
+      "type": "component",
+      "repeatable": true,
+      "component": "screening.process-step"
+    },
+    "seo": {
+      "type": "component",
+      "repeatable": false,
+      "component": "seo.entry",
+      "required": false
+    }
+  }
+}

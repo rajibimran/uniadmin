@@ -1,0 +1,91 @@
+{
+  "kind": "singleType",
+  "collectionName": "about_page",
+  "info": {
+    "singularName": "about-page",
+    "pluralName": "about-pages",
+    "displayName": "About Page",
+    "description": "About Us: mission, center, values, facility gallery, virtual tour"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "missionTitle": { "type": "string", "required": true },
+    "missionText": { "type": "text", "required": true },
+    "missionImage": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": ["images"]
+    },
+    "centerTitle": { "type": "string", "required": true },
+    "centerText": { "type": "text", "required": true },
+    "centerImage": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": ["images"]
+    },
+    "valuesSectionTitle": {
+      "type": "string",
+      "default": "Why Choose Us",
+      "required": false
+    },
+    "values": {
+      "type": "component",
+      "repeatable": true,
+      "component": "about.value-item"
+    },
+    "facilityGalleryTitle": {
+      "type": "string",
+      "default": "Facilities & Gallery",
+      "required": false
+    },
+    "facilityGallerySubtitle": {
+      "type": "text",
+      "required": false
+    },
+    "gallery": {
+      "type": "component",
+      "repeatable": true,
+      "component": "about.gallery-item"
+    },
+    "virtualTourYoutubeUrl": {
+      "type": "string",
+      "required": false
+    },
+    "seo": {
+      "type": "component",
+      "repeatable": false,
+      "component": "seo.entry",
+      "required": false
+    }
+  },
+  "config": {
+    "metadatas": {
+      "missionImage": {
+        "edit": {
+          "label": "Mission image (900x600px)",
+          "description": "About 900×600px, ≤150 KB."
+        },
+        "list": { "label": "Mission image (900x600px)" }
+      },
+      "centerImage": {
+        "edit": {
+          "label": "Center image (900x600px)",
+          "description": "About 900×600px, ≤150 KB."
+        },
+        "list": { "label": "Center image (900x600px)" }
+      },
+      "virtualTourYoutubeUrl": {
+        "edit": {
+          "label": "Virtual Tour YouTube URL",
+          "description": "Paste a YouTube watch/share/embed URL. Example: https://www.youtube.com/watch?v=VIDEO_ID"
+        },
+        "list": { "label": "Virtual Tour YouTube URL" }
+      }
+    }
+  }
+}
