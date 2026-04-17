@@ -572,6 +572,37 @@ export interface ApiCertificationCertification
   };
 }
 
+export interface ApiCountryFlagCountryFlag extends Struct.CollectionTypeSchema {
+  collectionName: 'country_flags';
+  info: {
+    description: 'Ordered name + flag image for region strips, selectors, or grids (any industry).';
+    displayName: 'Country flag';
+    pluralName: 'country-flags';
+    singularName: 'country-flag';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    flag: Schema.Attribute.Media<'images'> & Schema.Attribute.Required;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::country-flag.country-flag'
+    > &
+      Schema.Attribute.Private;
+    name: Schema.Attribute.String & Schema.Attribute.Required;
+    order: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<0>;
+    publishedAt: Schema.Attribute.DateTime;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiCountryGuidelineCountryGuideline
   extends Struct.CollectionTypeSchema {
   collectionName: 'country_guidelines';
@@ -796,40 +827,10 @@ export interface ApiGalleryImageGalleryImage
   };
 }
 
-export interface ApiGccCountryGccCountry extends Struct.CollectionTypeSchema {
-  collectionName: 'gcc_countries';
-  info: {
-    displayName: 'GCC Country';
-    pluralName: 'gcc-countries';
-    singularName: 'gcc-country';
-  };
-  options: {
-    draftAndPublish: true;
-  };
-  attributes: {
-    createdAt: Schema.Attribute.DateTime;
-    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
-    flag: Schema.Attribute.Media<'images'> & Schema.Attribute.Required;
-    locale: Schema.Attribute.String & Schema.Attribute.Private;
-    localizations: Schema.Attribute.Relation<
-      'oneToMany',
-      'api::gcc-country.gcc-country'
-    > &
-      Schema.Attribute.Private;
-    name: Schema.Attribute.String & Schema.Attribute.Required;
-    order: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<0>;
-    publishedAt: Schema.Attribute.DateTime;
-    updatedAt: Schema.Attribute.DateTime;
-    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
-  };
-}
-
 export interface ApiHeroHero extends Struct.CollectionTypeSchema {
   collectionName: 'heroes';
   info: {
-    description: 'Per-page hero: title, subtitle, slides, CTAs';
+    description: 'Per-page hero: title, subtitle, slide deck, CTAs';
     displayName: 'Hero';
     pluralName: 'heroes';
     singularName: 'hero';
@@ -851,12 +852,50 @@ export interface ApiHeroHero extends Struct.CollectionTypeSchema {
     promoVideo: Schema.Attribute.Media<'videos'>;
     publishedAt: Schema.Attribute.DateTime;
     seo: Schema.Attribute.Component<'seo.entry', false>;
-    slides: Schema.Attribute.Media<'images', true>;
+    slideItems: Schema.Attribute.Component<'hero.slide', true>;
     subtitle: Schema.Attribute.Text & Schema.Attribute.Required;
     title: Schema.Attribute.String & Schema.Attribute.Required;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+  };
+}
+
+export interface ApiLocationLocation extends Struct.CollectionTypeSchema {
+  collectionName: 'locations';
+  info: {
+    description: 'Branches, clinics, or offices with optional map embed.';
+    displayName: 'Location';
+    pluralName: 'locations';
+    singularName: 'location';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    address: Schema.Attribute.Text;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    email: Schema.Attribute.Email;
+    googleMapsEmbed: Schema.Attribute.Text;
+    heroImage: Schema.Attribute.Media<'images'>;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::location.location'
+    > &
+      Schema.Attribute.Private;
+    name: Schema.Attribute.String & Schema.Attribute.Required;
+    order: Schema.Attribute.Integer;
+    phone: Schema.Attribute.String;
+    publishedAt: Schema.Attribute.DateTime;
+    seo: Schema.Attribute.Component<'seo.entry', false>;
+    slug: Schema.Attribute.UID<'name'>;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    workingHours: Schema.Attribute.String;
   };
 }
 
@@ -969,6 +1008,77 @@ export interface ApiPrivacyPagePrivacyPage extends Struct.SingleTypeSchema {
   };
 }
 
+export interface ApiProductProduct extends Struct.CollectionTypeSchema {
+  collectionName: 'products';
+  info: {
+    description: 'Catalog-style offerings (non\u2013e-commerce): specs, gallery, downloads.';
+    displayName: 'Product';
+    pluralName: 'products';
+    singularName: 'product';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    brochureFile: Schema.Attribute.Media<'files'>;
+    categoryLabel: Schema.Attribute.String;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    description: Schema.Attribute.RichText & Schema.Attribute.Required;
+    featuredImage: Schema.Attribute.Media<'images'>;
+    gallery: Schema.Attribute.Media<'images', true>;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::product.product'
+    > &
+      Schema.Attribute.Private;
+    name: Schema.Attribute.String & Schema.Attribute.Required;
+    order: Schema.Attribute.Integer;
+    publishedAt: Schema.Attribute.DateTime;
+    seo: Schema.Attribute.Component<'seo.entry', false>;
+    slug: Schema.Attribute.UID<'name'> & Schema.Attribute.Required;
+    specificationFile: Schema.Attribute.Media<'files'>;
+    summary: Schema.Attribute.Text;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiRegionHighlightsSectionRegionHighlightsSection
+  extends Struct.SingleTypeSchema {
+  collectionName: 'region_highlights_sections';
+  info: {
+    description: 'Optional home strip: banner image, title, and body. Hide the whole block on the site until all fields are set and published.';
+    displayName: 'Region highlights section';
+    pluralName: 'region-highlights-sections';
+    singularName: 'region-highlights-section';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    bannerDescription: Schema.Attribute.Text;
+    bannerImage: Schema.Attribute.Media<'images'>;
+    bannerTitle: Schema.Attribute.String;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::region-highlights-section.region-highlights-section'
+    > &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiReportPageReportPage extends Struct.SingleTypeSchema {
   collectionName: 'report_page';
   info: {
@@ -996,6 +1106,61 @@ export interface ApiReportPageReportPage extends Struct.SingleTypeSchema {
     sampleStatus: Schema.Attribute.String;
     seo: Schema.Attribute.Component<'seo.entry', false>;
     supportPhone: Schema.Attribute.String;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiResourceItemResourceItem
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'resource_items';
+  info: {
+    description: 'Guides, downloads, case studies, webinars \u2014 knowledge base without a shop.';
+    displayName: 'Resource item';
+    pluralName: 'resource-items';
+    singularName: 'resource-item';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    categoryLabel: Schema.Attribute.String;
+    content: Schema.Attribute.RichText;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    downloadFile: Schema.Attribute.Media<'files'>;
+    externalUrl: Schema.Attribute.String;
+    featuredImage: Schema.Attribute.Media<'images'>;
+    isFeatured: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::resource-item.resource-item'
+    > &
+      Schema.Attribute.Private;
+    order: Schema.Attribute.Integer;
+    publishDate: Schema.Attribute.DateTime;
+    publishedAt: Schema.Attribute.DateTime;
+    resourceType: Schema.Attribute.Enumeration<
+      [
+        'guide',
+        'brochure',
+        'whitepaper',
+        'case-study',
+        'template',
+        'document',
+        'webinar',
+        'video',
+        'download',
+      ]
+    > &
+      Schema.Attribute.Required;
+    seo: Schema.Attribute.Component<'seo.entry', false>;
+    slug: Schema.Attribute.UID<'title'> & Schema.Attribute.Required;
+    summary: Schema.Attribute.Text & Schema.Attribute.Required;
+    title: Schema.Attribute.String & Schema.Attribute.Required;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -1218,6 +1383,43 @@ export interface ApiStatStat extends Struct.CollectionTypeSchema {
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
     value: Schema.Attribute.Integer & Schema.Attribute.Required;
+  };
+}
+
+export interface ApiTeamMemberTeamMember extends Struct.CollectionTypeSchema {
+  collectionName: 'team_members';
+  info: {
+    description: 'People / leadership grid for agency, studio, or professional services sites.';
+    displayName: 'Team member';
+    pluralName: 'team-members';
+    singularName: 'team-member';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    bio: Schema.Attribute.RichText;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    designation: Schema.Attribute.String & Schema.Attribute.Required;
+    email: Schema.Attribute.Email;
+    linkedinUrl: Schema.Attribute.String;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::team-member.team-member'
+    > &
+      Schema.Attribute.Private;
+    name: Schema.Attribute.String & Schema.Attribute.Required;
+    order: Schema.Attribute.Integer;
+    photo: Schema.Attribute.Media<'images'>;
+    publishedAt: Schema.Attribute.DateTime;
+    seo: Schema.Attribute.Component<'seo.entry', false>;
+    slug: Schema.Attribute.UID<'name'>;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
   };
 }
 
@@ -1776,6 +1978,7 @@ declare module '@strapi/strapi' {
       'api::article.article': ApiArticleArticle;
       'api::booking-page.booking-page': ApiBookingPageBookingPage;
       'api::certification.certification': ApiCertificationCertification;
+      'api::country-flag.country-flag': ApiCountryFlagCountryFlag;
       'api::country-guideline.country-guideline': ApiCountryGuidelineCountryGuideline;
       'api::equipment-item.equipment-item': ApiEquipmentItemEquipmentItem;
       'api::faq.faq': ApiFaqFaq;
@@ -1783,18 +1986,22 @@ declare module '@strapi/strapi' {
       'api::footer-quick-link.footer-quick-link': ApiFooterQuickLinkFooterQuickLink;
       'api::footer-service-link.footer-service-link': ApiFooterServiceLinkFooterServiceLink;
       'api::gallery-image.gallery-image': ApiGalleryImageGalleryImage;
-      'api::gcc-country.gcc-country': ApiGccCountryGccCountry;
       'api::hero.hero': ApiHeroHero;
+      'api::location.location': ApiLocationLocation;
       'api::navigation.navigation': ApiNavigationNavigation;
       'api::news-post.news-post': ApiNewsPostNewsPost;
       'api::privacy-page.privacy-page': ApiPrivacyPagePrivacyPage;
+      'api::product.product': ApiProductProduct;
+      'api::region-highlights-section.region-highlights-section': ApiRegionHighlightsSectionRegionHighlightsSection;
       'api::report-page.report-page': ApiReportPageReportPage;
+      'api::resource-item.resource-item': ApiResourceItemResourceItem;
       'api::screening-process-page.screening-process-page': ApiScreeningProcessPageScreeningProcessPage;
       'api::service-package.service-package': ApiServicePackageServicePackage;
       'api::service.service': ApiServiceService;
       'api::services-page.services-page': ApiServicesPageServicesPage;
       'api::site-config.site-config': ApiSiteConfigSiteConfig;
       'api::stat.stat': ApiStatStat;
+      'api::team-member.team-member': ApiTeamMemberTeamMember;
       'api::testimonial.testimonial': ApiTestimonialTestimonial;
       'plugin::content-releases.release': PluginContentReleasesRelease;
       'plugin::content-releases.release-action': PluginContentReleasesReleaseAction;

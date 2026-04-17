@@ -7,7 +7,8 @@ const NAV_UID = "api::navigation.navigation" as any;
 const FOOT_Q_UID = "api::footer-quick-link.footer-quick-link" as any;
 const FOOT_S_UID = "api::footer-service-link.footer-service-link" as any;
 const STAT_UID = "api::stat.stat" as any;
-const GCC_UID = "api::gcc-country.gcc-country" as any;
+const COUNTRY_FLAG_UID = "api::country-flag.country-flag" as any;
+const REGION_HIGHLIGHTS_SECTION_UID = "api::region-highlights-section.region-highlights-section" as any;
 const CERT_UID = "api::certification.certification" as any;
 const HERO_UID = "api::hero.hero" as any;
 const SERVICE_UID = "api::service.service" as any;
@@ -269,13 +270,32 @@ const SLIDE_POOL = [
   "https://images.unsplash.com/photo-1551190822-a9333d879b1f?w=1600&h=900&fit=crop",
 ];
 
-async function uploadSlides(strapi: Core.Strapi, prefix: string): Promise<number[]> {
-  const ids: number[] = [];
+type HeroSlideSeed = { imageId: number; title: string; text: string };
+
+/** One uploaded image per pool URL, paired with slide title + body text. */
+async function uploadHeroSlideItems(
+  strapi: Core.Strapi,
+  prefix: string,
+  copies: { title: string; text: string }[]
+): Promise<HeroSlideSeed[]> {
+  const out: HeroSlideSeed[] = [];
   let i = 0;
   for (const url of SLIDE_POOL) {
-    ids.push(await uploadImageFromUrl(strapi, url, `${prefix}-slide-${i++}.jpg`, `${prefix} hero`));
+    if (i >= copies.length) break;
+    const c = copies[i];
+    const id = await uploadImageFromUrl(strapi, url, `${prefix}-slide-${i}.jpg`, c.title);
+    out.push({ imageId: id, title: c.title, text: c.text });
+    i++;
   }
-  return ids;
+  return out;
+}
+
+function repeatSlideCopy(
+  count: number,
+  title: string,
+  text: string
+): { title: string; text: string }[] {
+  return Array.from({ length: count }, () => ({ title, text }));
 }
 
 async function upsertHero(
@@ -283,7 +303,7 @@ async function upsertHero(
   page: string,
   title: string,
   subtitle: string,
-  slideIds: number[],
+  slideDeck: HeroSlideSeed[],
   ctas?: { label: string; href: string; variant: "primary" | "secondary" }[]
 ) {
   const existing = await strapi.documents(HERO_UID).findMany({ filters: { page: { $eq: page } }, limit: 1 });
@@ -291,7 +311,15 @@ async function upsertHero(
     page,
     title,
     subtitle,
-    ...(slideIds.length ? { slides: slideIds } : {}),
+    ...(slideDeck.length
+      ? {
+          slideItems: slideDeck.map((s) => ({
+            image: s.imageId,
+            title: s.title,
+            text: s.text,
+          })),
+        }
+      : {}),
     ...(ctas?.length ? { ctaButtons: ctas } : {}),
   };
   if (existing.length === 0) {
@@ -302,8 +330,69 @@ async function upsertHero(
   }
 }
 
+/** Banner image for home region-highlights strip (matches previous static marketing). */
+const REGION_HIGHLIGHTS_BANNER_URL =
+  "https://images.unsplash.com/photo-1541888946425-d81bb19240f5?w=1920&h=640&fit=crop";
+
+async function upsertRegionHighlightsSectionSeed(strapi: Core.Strapi) {
+  const existing = await strapi.documents(REGION_HIGHLIGHTS_SECTION_UID).findMany({ limit: 1 });
+  if (existing.length > 0) {
+    const row = existing[0] as { documentId: string; bannerImage?: unknown; bannerTitle?: string; bannerDescription?: string };
+    if (
+      hasMediaField(row.bannerImage) &&
+      String(row.bannerTitle ?? "").trim() &&
+      String(row.bannerDescription ?? "").trim()
+    ) {
+      strapi.log.info("[seed:home] region-highlights-section already complete; skip.");
+      return;
+    }
+    try {
+      const imgId = await uploadImageFromUrl(
+        strapi,
+        REGION_HIGHLIGHTS_BANNER_URL,
+        "region-highlights-banner.jpg",
+        "Region highlights banner"
+      );
+      await strapi.documents(REGION_HIGHLIGHTS_SECTION_UID).update({
+        documentId: row.documentId,
+        data: {
+          bannerImage: imgId,
+          bannerTitle: "GAMCA Medical Centers in Bangladesh",
+          bannerDescription:
+            "GCC-approved medical screening for overseas employment — trusted by thousands of Bangladeshi workers",
+        } as any,
+        status: "published",
+      });
+      strapi.log.info("[seed:home] Updated region-highlights-section (filled missing fields).");
+    } catch (e) {
+      strapi.log.warn("[seed:home] region-highlights-section update skipped:", e);
+    }
+    return;
+  }
+  try {
+    const imgId = await uploadImageFromUrl(
+      strapi,
+      REGION_HIGHLIGHTS_BANNER_URL,
+      "region-highlights-banner.jpg",
+      "Region highlights banner"
+    );
+    await strapi.documents(REGION_HIGHLIGHTS_SECTION_UID).create({
+      data: {
+        bannerImage: imgId,
+        bannerTitle: "GAMCA Medical Centers in Bangladesh",
+        bannerDescription:
+          "GCC-approved medical screening for overseas employment — trusted by thousands of Bangladeshi workers",
+      } as any,
+      status: "published",
+    });
+    strapi.log.info("[seed:home] Created region-highlights-section.");
+  } catch (e) {
+    strapi.log.warn("[seed:home] region-highlights-section create skipped:", e);
+  }
+}
+
 async function seedHomePhase(strapi: Core.Strapi) {
-  strapi.log.info("[seed:home] Stats, GCC, testimonials, packages, gallery, FAQs, country guidelines, home hero…");
+  strapi.log.info("[seed:home] Stats, country flags, testimonials, packages, gallery, FAQs, country guidelines, home hero…");
 
   if ((await count(strapi, STAT_UID)) === 0) {
     for (const row of [
@@ -315,7 +404,7 @@ async function seedHomePhase(strapi: Core.Strapi) {
     }
   }
 
-  if ((await count(strapi, GCC_UID)) === 0) {
+  if ((await count(strapi, COUNTRY_FLAG_UID)) === 0) {
     const flags = [
       { name: "Bahrain", url: "https://flagcdn.com/w160/bh.png", order: 0 },
       { name: "Kuwait", url: "https://flagcdn.com/w160/kw.png", order: 1 },
@@ -329,15 +418,17 @@ async function seedHomePhase(strapi: Core.Strapi) {
       const fid = await uploadImageFromUrl(
         strapi,
         row.url,
-        `gcc-flag-${row.order}.png`,
+        `country-flag-${row.order}.png`,
         `${row.name} flag`
       );
-      await strapi.documents(GCC_UID).create({
+      await strapi.documents(COUNTRY_FLAG_UID).create({
         data: { name: row.name, flag: fid, order: row.order } as any,
         status: "published",
       });
     }
   }
+
+  await upsertRegionHighlightsSectionSeed(strapi);
 
   if ((await count(strapi, TESTIMONIAL_UID)) === 0) {
     const faces = [
@@ -461,13 +552,27 @@ async function seedHomePhase(strapi: Core.Strapi) {
     });
   }
 
-  const homeSlides = await uploadSlides(strapi, "home");
+  const homeSlideCopy = [
+    {
+      title: "GCC Approved Medical Center",
+      text: "Trusted for comprehensive health screening, medical checkups, and overseas employment certification in Dhaka, Bangladesh.",
+    },
+    {
+      title: "Advanced diagnostics",
+      text: "Digital imaging and accredited laboratory testing to meet GCC medical standards.",
+    },
+    {
+      title: "Patient-centered care",
+      text: "Experienced staff guiding you through every step of screening and certification.",
+    },
+  ];
+  const homeDeck = await uploadHeroSlideItems(strapi, "home", homeSlideCopy);
   await upsertHero(
     strapi,
     "home",
     "GCC Approved Medical Center",
     "Trusted for comprehensive health screening, medical checkups, and overseas employment certification in Dhaka, Bangladesh.",
-    homeSlides,
+    homeDeck,
     [
       { label: "Book Appointment", href: "/book", variant: "primary" },
       { label: "Check Report", href: "/reports", variant: "secondary" },
@@ -675,15 +780,12 @@ async function seedServicesPhase(strapi: Core.Strapi) {
     strapi.log.info("[seed:services] Created 4 services (relations best-effort).");
   }
 
-  const svcSlides = await uploadSlides(strapi, "services");
-  await upsertHero(
-    strapi,
-    "services",
-    "Our Services",
-    "Comprehensive GCC-approved medical services for overseas employment and travel certification.",
-    svcSlides,
-    [{ label: "Book Appointment", href: "/book", variant: "primary" }]
-  );
+  const svcTitle = "Our Services";
+  const svcSub = "Comprehensive GCC-approved medical services for overseas employment and travel certification.";
+  const svcDeck = await uploadHeroSlideItems(strapi, "services", repeatSlideCopy(SLIDE_POOL.length, svcTitle, svcSub));
+  await upsertHero(strapi, "services", svcTitle, svcSub, svcDeck, [
+    { label: "Book Appointment", href: "/book", variant: "primary" },
+  ]);
 
   strapi.log.info("[seed:services] Done. GET /api/services?populate=*");
 }
@@ -715,13 +817,18 @@ async function enrichAboutMedia(strapi: Core.Strapi) {
   const heroes = await strapi.documents(HERO_UID).findMany({ filters: { page: { $eq: "about" } }, limit: 1 });
   if (heroes.length > 0) {
     const hid = (heroes[0] as { documentId: string }).documentId;
-    const slides = await uploadSlides(strapi, "about");
+    const h = heroes[0] as { title?: string; subtitle?: string };
+    const t = String(h.title ?? "About Us");
+    const sub = String(h.subtitle ?? "Delivering trusted, GCC-approved medical services in Dhaka.");
+    const deck = await uploadHeroSlideItems(strapi, "about", repeatSlideCopy(SLIDE_POOL.length, t, sub));
     await strapi.documents(HERO_UID).update({
       documentId: hid,
-      data: { slides } as any,
+      data: {
+        slideItems: deck.map((s) => ({ image: s.imageId, title: s.title, text: s.text })),
+      } as any,
       status: "published",
     });
-    strapi.log.info("[seed:about] Hero slides updated.");
+    strapi.log.info("[seed:about] Hero slideItems updated.");
   }
 }
 
@@ -735,15 +842,10 @@ async function seedAboutPhase(strapi: Core.Strapi) {
 // ── Phase: contact ─────────────────────────────────────────────
 
 async function seedContactPhase(strapi: Core.Strapi) {
-  const slides = await uploadSlides(strapi, "contact");
-  await upsertHero(
-    strapi,
-    "contact",
-    "Contact Us",
-    "We're here to help. Reach out for appointments, inquiries, or assistance.",
-    slides,
-    [{ label: "Book Appointment", href: "/book", variant: "primary" }]
-  );
+  const t = "Contact Us";
+  const sub = "We're here to help. Reach out for appointments, inquiries, or assistance.";
+  const deck = await uploadHeroSlideItems(strapi, "contact", repeatSlideCopy(SLIDE_POOL.length, t, sub));
+  await upsertHero(strapi, "contact", t, sub, deck, [{ label: "Book Appointment", href: "/book", variant: "primary" }]);
   strapi.log.info("[seed:contact] Done. GET /api/heroes?filters[page][$eq]=contact");
 }
 
@@ -781,15 +883,10 @@ async function seedFitnessPhase(strapi: Core.Strapi) {
       await strapi.documents(FITNESS_UID).create({ data: row as any, status: "published" });
     }
   }
-  const slides = await uploadSlides(strapi, "fitness");
-  await upsertHero(
-    strapi,
-    "fitness",
-    "Fitness Criteria",
-    "Health requirements for overseas employment certification.",
-    slides,
-    [{ label: "Book Appointment", href: "/book", variant: "primary" }]
-  );
+  const t = "Fitness Criteria";
+  const sub = "Health requirements for overseas employment certification.";
+  const deck = await uploadHeroSlideItems(strapi, "fitness", repeatSlideCopy(SLIDE_POOL.length, t, sub));
+  await upsertHero(strapi, "fitness", t, sub, deck, [{ label: "Book Appointment", href: "/book", variant: "primary" }]);
   strapi.log.info("[seed:fitness] Done. GET /api/fitness-criteria?populate=*");
 }
 
@@ -848,15 +945,10 @@ async function seedEquipmentPhase(strapi: Core.Strapi) {
       await strapi.documents(EQUIP_UID).create({ data: r as any, status: "published" });
     }
   }
-  const slides = await uploadSlides(strapi, "equipment");
-  await upsertHero(
-    strapi,
-    "equipment",
-    "Medical Equipment",
-    "State-of-the-art medical equipment ensuring precision, speed, and reliability in diagnostics.",
-    slides,
-    [{ label: "Book Appointment", href: "/book", variant: "primary" }]
-  );
+  const t = "Medical Equipment";
+  const sub = "State-of-the-art medical equipment ensuring precision, speed, and reliability in diagnostics.";
+  const deck = await uploadHeroSlideItems(strapi, "equipment", repeatSlideCopy(SLIDE_POOL.length, t, sub));
+  await upsertHero(strapi, "equipment", t, sub, deck, [{ label: "Book Appointment", href: "/book", variant: "primary" }]);
   strapi.log.info("[seed:equipment] Done. GET /api/equipment-items?populate=*");
 }
 
@@ -906,15 +998,10 @@ async function seedNewsPhase(strapi: Core.Strapi) {
       });
     }
   }
-  const slides = await uploadSlides(strapi, "news");
-  await upsertHero(
-    strapi,
-    "news",
-    "News & Updates",
-    "Stay informed with the latest announcements, regulatory changes, and clinic updates.",
-    slides,
-    [{ label: "Book Appointment", href: "/book", variant: "primary" }]
-  );
+  const t = "News & Updates";
+  const sub = "Stay informed with the latest announcements, regulatory changes, and clinic updates.";
+  const deck = await uploadHeroSlideItems(strapi, "news", repeatSlideCopy(SLIDE_POOL.length, t, sub));
+  await upsertHero(strapi, "news", t, sub, deck, [{ label: "Book Appointment", href: "/book", variant: "primary" }]);
   strapi.log.info("[seed:news] Done. GET /api/news-posts?populate=*");
 }
 
@@ -964,15 +1051,10 @@ async function seedBlogPhase(strapi: Core.Strapi) {
       });
     }
   }
-  const slides = await uploadSlides(strapi, "blog");
-  await upsertHero(
-    strapi,
-    "blog",
-    "Health Resources",
-    "Articles, guides, and tips to help you prepare for your medical screening.",
-    slides,
-    [{ label: "Book Appointment", href: "/book", variant: "primary" }]
-  );
+  const t = "Health Resources";
+  const sub = "Articles, guides, and tips to help you prepare for your medical screening.";
+  const deck = await uploadHeroSlideItems(strapi, "blog", repeatSlideCopy(SLIDE_POOL.length, t, sub));
+  await upsertHero(strapi, "blog", t, sub, deck, [{ label: "Book Appointment", href: "/book", variant: "primary" }]);
   strapi.log.info("[seed:blog] Done. GET /api/articles?populate=*");
 }
 

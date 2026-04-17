@@ -1,0 +1,24 @@
+{
+  "collectionName": "components_hero_slides",
+  "info": {
+    "displayName": "Hero slide",
+    "description": "One hero carousel slide: image plus headline and text"
+  },
+  "options": {},
+  "attributes": {
+    "image": {
+      "type": "media",
+      "multiple": false,
+      "required": true,
+      "allowedTypes": ["images"]
+    },
+    "title": {
+      "type": "string",
+      "required": true
+    },
+    "text": {
+      "type": "text",
+      "required": true
+    }
+  }
+}

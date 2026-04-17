@@ -22,7 +22,11 @@ const COLLECTION_API_UIDS = [
   "api::news-post.news-post",
   "api::article.article",
   "api::country-guideline.country-guideline",
-  "api::gcc-country.gcc-country",
+  "api::country-flag.country-flag",
+  "api::product.product",
+  "api::team-member.team-member",
+  "api::resource-item.resource-item",
+  "api::location.location",
   "api::equipment-item.equipment-item",
   "api::fitness-criterion.fitness-criterion",
   "api::stat.stat",
@@ -40,6 +44,7 @@ const COLLECTION_API_UIDS = [
 /** Single types: controller exposes find only. */
 const SINGLE_API_UIDS = [
   "api::site-config.site-config",
+  "api::region-highlights-section.region-highlights-section",
   "api::about-page.about-page",
   "api::services-page.services-page",
   "api::booking-page.booking-page",

@@ -1,0 +1,53 @@
+{
+  "kind": "singleType",
+  "collectionName": "region_highlights_sections",
+  "info": {
+    "singularName": "region-highlights-section",
+    "pluralName": "region-highlights-sections",
+    "displayName": "Region highlights section",
+    "description": "Optional home strip: banner image, title, and body. Hide the whole block on the site until all fields are set and published."
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "bannerImage": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": ["images"]
+    },
+    "bannerTitle": {
+      "type": "string",
+      "required": false
+    },
+    "bannerDescription": {
+      "type": "text",
+      "required": false
+    }
+  },
+  "config": {
+    "metadatas": {
+      "bannerImage": {
+        "edit": {
+          "label": "Banner image",
+          "description": "Wide image (~1920×640) for the top strip above pills or rows."
+        },
+        "list": { "label": "Banner image" }
+      },
+      "bannerTitle": {
+        "edit": {
+          "label": "Banner title",
+          "description": "Headline overlaid on the banner."
+        }
+      },
+      "bannerDescription": {
+        "edit": {
+          "label": "Banner description",
+          "description": "Supporting text under the title."
+        }
+      }
+    }
+  }
+}

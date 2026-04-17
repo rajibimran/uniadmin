@@ -5,7 +5,7 @@
     "singularName": "hero",
     "pluralName": "heroes",
     "displayName": "Hero",
-    "description": "Per-page hero: title, subtitle, slides, CTAs"
+    "description": "Per-page hero: title, subtitle, slide deck, CTAs"
   },
   "options": {
     "draftAndPublish": true
@@ -19,11 +19,11 @@
     },
     "title": { "type": "string", "required": true },
     "subtitle": { "type": "text", "required": true },
-    "slides": {
-      "type": "media",
-      "multiple": true,
-      "required": false,
-      "allowedTypes": ["images"]
+    "slideItems": {
+      "type": "component",
+      "repeatable": true,
+      "component": "hero.slide",
+      "required": false
     },
     "ctaButtons": {
       "type": "component",
@@ -45,12 +45,12 @@
   },
   "config": {
     "metadatas": {
-      "slides": {
+      "slideItems": {
         "edit": {
-          "label": "Slides (1600x900px each)",
-          "description": "Each slide about 1600×900px, ≤250 KB. Add multiple for rotation."
+          "label": "Slides",
+          "description": "Add slides in order. Each slide: image (~1600×900), title, and text shown when that slide is active."
         },
-        "list": { "label": "Slides (1600x900px each)" }
+        "list": { "label": "Slides" }
       }
     }
   }

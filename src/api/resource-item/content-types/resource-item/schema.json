@@ -1,0 +1,78 @@
+{
+  "kind": "collectionType",
+  "collectionName": "resource_items",
+  "info": {
+    "singularName": "resource-item",
+    "pluralName": "resource-items",
+    "displayName": "Resource item",
+    "description": "Guides, downloads, case studies, webinars — knowledge base without a shop."
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "title": {
+      "type": "string",
+      "required": true
+    },
+    "slug": {
+      "type": "uid",
+      "targetField": "title",
+      "required": true
+    },
+    "resourceType": {
+      "type": "enumeration",
+      "enum": [
+        "guide",
+        "brochure",
+        "whitepaper",
+        "case-study",
+        "template",
+        "document",
+        "webinar",
+        "video",
+        "download"
+      ],
+      "required": true
+    },
+    "summary": {
+      "type": "text",
+      "required": true
+    },
+    "content": {
+      "type": "richtext"
+    },
+    "featuredImage": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": ["images"]
+    },
+    "downloadFile": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": ["files"]
+    },
+    "externalUrl": {
+      "type": "string"
+    },
+    "publishDate": {
+      "type": "datetime"
+    },
+    "categoryLabel": {
+      "type": "string"
+    },
+    "isFeatured": {
+      "type": "boolean",
+      "default": false
+    },
+    "order": {
+      "type": "integer"
+    },
+    "seo": {
+      "type": "component",
+      "component": "seo.entry",
+      "repeatable": false
+    }
+  }
+}

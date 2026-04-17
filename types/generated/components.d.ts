@@ -41,6 +41,19 @@ export interface HeroCtaButton extends Struct.ComponentSchema {
   };
 }
 
+export interface HeroSlide extends Struct.ComponentSchema {
+  collectionName: 'components_hero_slides';
+  info: {
+    description: 'One hero carousel slide: image plus headline and text';
+    displayName: 'Hero slide';
+  };
+  attributes: {
+    image: Schema.Attribute.Media<'images'> & Schema.Attribute.Required;
+    text: Schema.Attribute.Text & Schema.Attribute.Required;
+    title: Schema.Attribute.String & Schema.Attribute.Required;
+  };
+}
+
 export interface PrivacySection extends Struct.ComponentSchema {
   collectionName: 'components_privacy_sections';
   info: {
@@ -169,6 +182,7 @@ declare module '@strapi/strapi' {
       'about.gallery-item': AboutGalleryItem;
       'about.value-item': AboutValueItem;
       'hero.cta-button': HeroCtaButton;
+      'hero.slide': HeroSlide;
       'privacy.section': PrivacySection;
       'screening.process-step': ScreeningProcessStep;
       'seo.entry': SeoEntry;

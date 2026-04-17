@@ -1,10 +1,11 @@
 {
   "kind": "collectionType",
-  "collectionName": "gcc_countries",
+  "collectionName": "country_flags",
   "info": {
-    "singularName": "gcc-country",
-    "pluralName": "gcc-countries",
-    "displayName": "GCC Country"
+    "singularName": "country-flag",
+    "pluralName": "country-flags",
+    "displayName": "Country flag",
+    "description": "Ordered name + flag image for region strips, selectors, or grids (any industry)."
   },
   "options": {
     "draftAndPublish": true
@@ -30,10 +31,10 @@
     "metadatas": {
       "flag": {
         "edit": {
-          "label": "Flag (80x50px)",
-          "description": "About 80×50px, ≤40 KB. Used in the GCC strip on the home page."
+          "label": "Flag image",
+          "description": "About 80×50px or similar; small file for fast load."
         },
-        "list": { "label": "Flag (80x50px)" }
+        "list": { "label": "Flag image" }
       }
     }
   }
