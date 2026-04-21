@@ -1,0 +1,26 @@
+{
+  "collectionName": "components_site_footer_columns",
+  "info": {
+    "displayName": "Footer column",
+    "description": "Footer column: title, optional body, optional map, and/or links"
+  },
+  "options": {},
+  "attributes": {
+    "title": { "type": "string", "required": true },
+    "body": {
+      "type": "text",
+      "required": false
+    },
+    "showMap": {
+      "type": "boolean",
+      "default": false,
+      "required": false
+    },
+    "links": {
+      "type": "component",
+      "repeatable": true,
+      "component": "site.footer-link",
+      "required": false
+    }
+  }
+}

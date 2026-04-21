@@ -1,0 +1,44 @@
+{
+  "kind": "collectionType",
+  "collectionName": "authors",
+  "info": {
+    "singularName": "author",
+    "pluralName": "authors",
+    "displayName": "Author",
+    "description": "Optional byline for blog articles and news posts."
+  },
+  "options": { "draftAndPublish": true },
+  "pluginOptions": {},
+  "attributes": {
+    "name": { "type": "string", "required": true },
+    "slug": { "type": "uid", "targetField": "name", "required": true },
+    "bio": { "type": "text", "required": false },
+    "email": { "type": "email", "required": false },
+    "avatar": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": ["images"]
+    },
+    "articles": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::article.article",
+      "mappedBy": "author"
+    },
+    "newsPosts": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::news-post.news-post",
+      "mappedBy": "author"
+    }
+  },
+  "config": {
+    "metadatas": {
+      "avatar": {
+        "edit": { "label": "Avatar", "description": "Optional headshot (~200×200px)." },
+        "list": { "label": "Avatar" }
+      }
+    }
+  }
+}

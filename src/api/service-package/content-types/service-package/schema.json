@@ -19,9 +19,11 @@
       "type": "text",
       "required": true
     },
-    "features": {
-      "type": "json",
-      "required": true
+    "featureLines": {
+      "type": "component",
+      "repeatable": true,
+      "component": "service.simple-line",
+      "required": false
     },
     "pricing": {
       "type": "string",
@@ -30,6 +32,17 @@
     "order": {
       "type": "integer",
       "default": 0
+    }
+  },
+  "config": {
+    "metadatas": {
+      "featureLines": {
+        "edit": {
+          "label": "Package features",
+          "description": "Click “Add an entry” for each bullet. One short line per feature (no JSON)."
+        },
+        "list": { "label": "Features" }
+      }
     }
   }
 }

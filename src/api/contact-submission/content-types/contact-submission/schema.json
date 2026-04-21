@@ -1,0 +1,50 @@
+{
+  "kind": "collectionType",
+  "collectionName": "contact_submissions",
+  "info": {
+    "singularName": "contact-submission",
+    "pluralName": "contact-submissions",
+    "displayName": "Contact submission",
+    "description": "Messages from the website contact and home “Get in touch” forms. Manage here; do not expose publicly via REST."
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "formKey": {
+      "type": "enumeration",
+      "enum": ["contact_page", "home_quick"],
+      "required": true,
+      "default": "contact_page"
+    },
+    "name": {
+      "type": "string",
+      "required": true,
+      "maxLength": 120
+    },
+    "email": {
+      "type": "email",
+      "required": true
+    },
+    "phone": {
+      "type": "string",
+      "maxLength": 40,
+      "required": false
+    },
+    "serviceInterest": {
+      "type": "string",
+      "maxLength": 120,
+      "required": false
+    },
+    "message": {
+      "type": "text",
+      "required": true
+    },
+    "isRead": {
+      "type": "boolean",
+      "default": false,
+      "required": false
+    }
+  }
+}

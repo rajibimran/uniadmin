@@ -19,6 +19,8 @@ const FAQ_UID = "api::faq.faq" as any;
 const CG_UID = "api::country-guideline.country-guideline" as any;
 const NEWS_UID = "api::news-post.news-post" as any;
 const ARTICLE_UID = "api::article.article" as any;
+const POST_CATEGORY_UID = "api::post-category.post-category" as any;
+const AUTHOR_UID = "api::author.author" as any;
 const EQUIP_UID = "api::equipment-item.equipment-item" as any;
 const FITNESS_UID = "api::fitness-criterion.fitness-criterion" as any;
 const ABOUT_UID = "api::about-page.about-page" as any;
@@ -27,6 +29,7 @@ const BOOKING_PAGE_UID = "api::booking-page.booking-page" as any;
 const REPORT_PAGE_UID = "api::report-page.report-page" as any;
 const SCREENING_PAGE_UID = "api::screening-process-page.screening-process-page" as any;
 const PRIVACY_PAGE_UID = "api::privacy-page.privacy-page" as any;
+const FITNESS_PAGE_UID = "api::fitness-page.fitness-page" as any;
 
 const LOGO_URL = "https://unicaremedicalbd.co/assets/img/logo_unicare.png";
 
@@ -38,6 +41,92 @@ function richtext(text: string) {
 async function count(strapi: Core.Strapi, uid: any): Promise<number> {
   const many = await strapi.documents(uid).findMany({ limit: 500 });
   return many.length;
+}
+
+/**
+ * Link FAQs to the matching **Hero** (dropdown source in Admin).
+ * - If `sitePage` is empty: resolve from legacy DB column `page` when present, else default `home`.
+ */
+async function ensureFaqSitePageLinks(strapi: Core.Strapi) {
+  let heroes: Array<{ documentId?: string; page?: string }> = [];
+  try {
+    heroes = (await strapi.documents(HERO_UID).findMany({ limit: 200 })) as Array<{ documentId?: string; page?: string }>;
+  } catch {
+    return;
+  }
+  const pageToHeroDocId = new Map<string, string>();
+  for (const h of heroes) {
+    if (h.page && h.documentId) pageToHeroDocId.set(String(h.page).trim(), h.documentId);
+  }
+  if (pageToHeroDocId.size === 0) return;
+
+  let tableName = "faqs";
+  try {
+    const meta = strapi.db.metadata.get(FAQ_UID);
+    if (meta && typeof (meta as { tableName?: string }).tableName === "string") {
+      tableName = (meta as { tableName: string }).tableName;
+    }
+  } catch {
+    /* keep default */
+  }
+
+  const knex = strapi.db.connection;
+  let hasLegacyPageCol = false;
+  try {
+    hasLegacyPageCol = await knex.schema.hasColumn(tableName, "page");
+  } catch {
+    hasLegacyPageCol = false;
+  }
+
+  const faqs = (await strapi.documents(FAQ_UID).findMany({
+    limit: 500,
+    populate: { sitePage: true },
+  })) as Array<{
+    documentId?: string;
+    sitePage?: { documentId?: string } | string | null;
+  }>;
+
+  let linked = 0;
+  for (const row of faqs) {
+    if (!row.documentId) continue;
+    const siteRef =
+      typeof row.sitePage === "object" && row.sitePage && "documentId" in row.sitePage
+        ? row.sitePage.documentId
+        : typeof row.sitePage === "string"
+          ? row.sitePage
+          : null;
+    if (siteRef) continue;
+
+    let pageKey: string | null = null;
+    if (hasLegacyPageCol) {
+      try {
+        const r = await knex(tableName).where({ document_id: row.documentId }).first();
+        const p = r?.page;
+        if (p != null && String(p).trim()) pageKey = String(p).trim();
+      } catch {
+        /* ignore */
+      }
+    }
+    if (!pageKey) pageKey = "home";
+    const hid = pageToHeroDocId.get(pageKey);
+    if (!hid) {
+      strapi.log.warn(
+        `[seed:faq] FAQ ${row.documentId} has no sitePage; no published Hero for page="${pageKey}". Link it in Admin.`
+      );
+      continue;
+    }
+    try {
+      await strapi.documents(FAQ_UID).update({
+        documentId: row.documentId,
+        data: { sitePage: hid } as any,
+        status: "published",
+      });
+      linked++;
+    } catch (e) {
+      strapi.log.warn(`[seed:faq] Could not link FAQ ${row.documentId} to hero:`, e);
+    }
+  }
+  if (linked) strapi.log.info(`[seed:faq] Linked ${linked} FAQ(s) to Hero (sitePage).`);
 }
 
 function hasMediaField(val: unknown): boolean {
@@ -71,6 +160,28 @@ async function seedLayoutPhase(strapi: Core.Strapi) {
     facebookUrl: "https://facebook.com",
     instagramUrl: "https://instagram.com",
     linkedinUrl: "https://linkedin.com",
+    showBlogSection: true,
+    showNewsSection: true,
+    commentsEnabled: false,
+    contactFormSendConfirmation: true,
+    footerBrandExtra:
+      "GCC approved medical center providing comprehensive health screening and certification services in Dhaka, Bangladesh.",
+    footerColumns: [],
+    footerCertStripTitle: "Approved & Certified By",
+    footerPrivacyLinkLabel: "Privacy Policy",
+    footerCopyrightExtra: ", Dhaka. All rights reserved.",
+    footerMapPlaceholderLabel: "Map Placeholder",
+    footerLegacyQuickTitle: "Quick Navigation",
+    footerLegacyServicesTitle: "Our Services",
+    footerLegacyHelpTitle: "Help Desk",
+    footerLegacyHelpBody: "Need assistance? Our help desk is available during working hours.",
+    quickContactSectionTitle: "Get In Touch",
+    quickContactSectionBody:
+      "Have questions? Reach out to us directly or send a quick message. Submissions are saved for staff and can trigger email when the server is configured.",
+    quickContactFormHeading: "Send a Message",
+    quickContactSuccessHeading: "Message Sent!",
+    quickContactSuccessBody: "We'll get back to you within 24 hours.",
+    quickContactIframeTitle: "Clinic location",
     ...(logoId ? { logo: logoId } : {}),
   } as any;
 
@@ -109,7 +220,8 @@ async function seedLayoutPhase(strapi: Core.Strapi) {
       status: "published",
     });
     await strapi.documents(NAV_UID).create({ data: { label: "News", href: "/news", order: 4 } as any, status: "published" });
-    await strapi.documents(NAV_UID).create({ data: { label: "Contact", href: "/contact", order: 5 } as any, status: "published" });
+    await strapi.documents(NAV_UID).create({ data: { label: "Blog", href: "/blog", order: 5 } as any, status: "published" });
+    await strapi.documents(NAV_UID).create({ data: { label: "Contact", href: "/contact", order: 6 } as any, status: "published" });
     strapi.log.info("[seed:layout] Navigation created.");
   }
 
@@ -159,7 +271,7 @@ async function seedLayoutPhase(strapi: Core.Strapi) {
   if ((await count(strapi, SERVICES_PAGE_UID)) === 0) {
     await strapi.documents(SERVICES_PAGE_UID).create({
       data: {
-        categories: ["All", "Examination", "Imaging", "Laboratory", "Preventive"],
+        entryTitle: "Services Page",
         comparisonRows: [
           { feature: "General Medical Exam", physical: "yes", radiology: "no", laboratory: "no", vaccination: "no" },
           { feature: "Chest X-ray", physical: "no", radiology: "yes", laboratory: "no", vaccination: "no" },
@@ -173,13 +285,15 @@ async function seedLayoutPhase(strapi: Core.Strapi) {
   }
 
   if ((await count(strapi, BOOKING_PAGE_UID)) === 0) {
+    const slotLabels = [
+      "08:00 AM", "08:30 AM", "09:00 AM", "09:30 AM", "10:00 AM", "10:30 AM",
+      "11:00 AM", "11:30 AM", "02:00 PM", "02:30 PM", "03:00 PM", "03:30 PM",
+      "04:00 PM", "04:30 PM", "05:00 PM",
+    ];
     await strapi.documents(BOOKING_PAGE_UID).create({
       data: {
-        timeSlots: [
-          "08:00 AM", "08:30 AM", "09:00 AM", "09:30 AM", "10:00 AM", "10:30 AM",
-          "11:00 AM", "11:30 AM", "02:00 PM", "02:30 PM", "03:00 PM", "03:30 PM",
-          "04:00 PM", "04:30 PM", "05:00 PM",
-        ],
+        entryTitle: "Booking Page",
+        timeSlotLines: slotLabels.map((text) => ({ text })),
       } as any,
       status: "published",
     });
@@ -239,6 +353,10 @@ async function seedLayoutPhase(strapi: Core.Strapi) {
     await strapi.documents(PRIVACY_PAGE_UID).create({
       data: {
         title: "Privacy Policy",
+        intro:
+          "At Unicare Medical Services, we are committed to protecting the privacy and confidentiality of your personal and medical information.",
+        contactBlock:
+          "For privacy-related inquiries, contact us at [unicaremedicalbd@gmail.com](mailto:unicaremedicalbd@gmail.com).",
         sections: [
           {
             heading: "Information We Collect",
@@ -259,6 +377,18 @@ async function seedLayoutPhase(strapi: Core.Strapi) {
     strapi.log.info("[seed:layout] Privacy Page single type seeded.");
   }
 
+  if ((await count(strapi, FITNESS_PAGE_UID)) === 0) {
+    await strapi.documents(FITNESS_PAGE_UID).create({
+      data: {
+        entryTitle: "Fitness Page",
+        disclaimer:
+          "**Note:** These are standard GCC fitness criteria. Specific requirements may vary by destination country. Please consult our medical team for country-specific guidance.",
+      } as any,
+      status: "published",
+    });
+    strapi.log.info("[seed:layout] Fitness Page single type seeded.");
+  }
+
   strapi.log.info("[seed:layout] Done. Check Admin → Site Config, Navigation, Footer links, Certifications.");
 }
 
@@ -270,7 +400,9 @@ const SLIDE_POOL = [
   "https://images.unsplash.com/photo-1551190822-a9333d879b1f?w=1600&h=900&fit=crop",
 ];
 
-type HeroSlideSeed = { imageId: number; title: string; text: string };
+type HeroCtaSeed = { label: string; href: string; variant: "primary" | "secondary" };
+
+type HeroSlideSeed = { imageId: number; title: string; text: string; ctaButtons?: HeroCtaSeed[] };
 
 /** One uploaded image per pool URL, paired with slide title + body text. */
 async function uploadHeroSlideItems(
@@ -304,7 +436,8 @@ async function upsertHero(
   title: string,
   subtitle: string,
   slideDeck: HeroSlideSeed[],
-  ctas?: { label: string; href: string; variant: "primary" | "secondary" }[]
+  /** Applied to each slide that does not define its own `ctaButtons` (per-slide CTAs live on `hero.slide`). */
+  defaultSlideCtas?: HeroCtaSeed[]
 ) {
   const existing = await strapi.documents(HERO_UID).findMany({ filters: { page: { $eq: page } }, limit: 1 });
   const data: Record<string, unknown> = {
@@ -313,14 +446,21 @@ async function upsertHero(
     subtitle,
     ...(slideDeck.length
       ? {
-          slideItems: slideDeck.map((s) => ({
-            image: s.imageId,
-            title: s.title,
-            text: s.text,
-          })),
+          slideItems: slideDeck.map((s) => {
+            const slideCtas =
+              s.ctaButtons && s.ctaButtons.length > 0 ? s.ctaButtons : defaultSlideCtas && defaultSlideCtas.length > 0
+                ? defaultSlideCtas
+                : undefined;
+            return {
+              image: s.imageId,
+              title: s.title,
+              text: s.text,
+              ...(slideCtas && slideCtas.length ? { ctaButtons: slideCtas } : {}),
+            };
+          }),
         }
       : {}),
-    ...(ctas?.length ? { ctaButtons: ctas } : {}),
+    ctaButtons: [],
   };
   if (existing.length === 0) {
     await strapi.documents(HERO_UID).create({ data: data as any, status: "published" });
@@ -496,17 +636,6 @@ async function seedHomePhase(strapi: Core.Strapi) {
     }
   }
 
-  if ((await count(strapi, FAQ_UID)) === 0) {
-    const faqs = [
-      { question: "What documents should I bring?", answer: "Valid passport, photos, and your GAMCA slip. Additional documents may apply by country.", order: 0 },
-      { question: "How long does reporting take?", answer: "Most results are available within 24–48 hours depending on the test panel.", order: 1 },
-      { question: "Do you offer same-day appointments?", answer: "Subject to slot availability. Please call or book online for the next opening.", order: 2 },
-    ];
-    for (const f of faqs) {
-      await strapi.documents(FAQ_UID).create({ data: f as any, status: "published" });
-    }
-  }
-
   if ((await count(strapi, CG_UID)) === 0) {
     const flagKsa = await uploadImageFromUrl(
       strapi,
@@ -579,7 +708,41 @@ async function seedHomePhase(strapi: Core.Strapi) {
     ]
   );
 
-  strapi.log.info("[seed:home] Done. Check GET /api/stats, /testimonials, /service-packages, /gallery-images, /faqs, /country-guidelines, /heroes?filters[page][$eq]=home");
+  const homeHeroRows = await strapi.documents(HERO_UID).findMany({
+    filters: { page: { $eq: "home" } },
+    limit: 1,
+  });
+  const homeHeroDocId = (homeHeroRows[0] as { documentId?: string } | undefined)?.documentId;
+
+  if ((await count(strapi, FAQ_UID)) === 0 && homeHeroDocId) {
+    const faqs = [
+      {
+        question: "What documents should I bring?",
+        answer: "Valid passport, photos, and your GAMCA slip. Additional documents may apply by country.",
+        order: 0,
+      },
+      {
+        question: "How long does reporting take?",
+        answer: "Most results are available within 24–48 hours depending on the test panel.",
+        order: 1,
+      },
+      {
+        question: "Do you offer same-day appointments?",
+        answer: "Subject to slot availability. Please call or book online for the next opening.",
+        order: 2,
+      },
+    ];
+    for (const f of faqs) {
+      await strapi.documents(FAQ_UID).create({
+        data: { ...f, sitePage: homeHeroDocId } as any,
+        status: "published",
+      });
+    }
+  }
+
+  strapi.log.info(
+    "[seed:home] Done. Check GET /api/stats, /testimonials, /service-packages, /gallery-images, /faqs?filters[sitePage][page][$eq]=home, /country-guidelines, /heroes?filters[page][$eq]=home"
+  );
 }
 
 // ── Phase: services ────────────────────────────────────────────
@@ -787,6 +950,70 @@ async function seedServicesPhase(strapi: Core.Strapi) {
     { label: "Book Appointment", href: "/book", variant: "primary" },
   ]);
 
+  const existingSvcFaqs = await strapi.documents(FAQ_UID).findMany({
+    filters: { sitePage: { page: { $eq: "services" } } },
+    limit: 1,
+  });
+  const servicesHeroRows = await strapi.documents(HERO_UID).findMany({
+    filters: { page: { $eq: "services" } },
+    limit: 1,
+  });
+  const servicesHeroDocId = (servicesHeroRows[0] as { documentId?: string } | undefined)?.documentId;
+
+  if (existingSvcFaqs.length === 0 && servicesHeroDocId) {
+    const servicesFaqDefs = [
+      {
+        question: "What documents do I need for a GCC medical checkup?",
+        answer:
+          "You will need your valid passport (original and copy), 2 passport-size photos, and your GAMCA slip or token number. If you have previous medical reports, please bring those as well.",
+        order: 0,
+      },
+      {
+        question: "How long does the complete medical screening take?",
+        answer:
+          "The complete screening including physical examination, radiology, lab tests, and vaccination typically takes 2–3 hours. Reports are delivered within 24 hours.",
+        order: 1,
+      },
+      {
+        question: "Do I need to fast before the medical checkup?",
+        answer:
+          "Yes, we recommend 8–12 hours of fasting before your appointment for accurate blood test results. You may drink water during the fasting period.",
+        order: 2,
+      },
+      {
+        question: "What lab tests are included in the screening?",
+        answer:
+          "Our lab panel includes Biochemistry (R.B.S, L.F.T, Creatinine), Immunology, Hematology, Serology (HIV I&II, HBs Ag, Anti HCV, VDRL, TPHA if VDRL positive, Pregnancy), and Clinical Pathology (Urine and Stool analysis).",
+        order: 3,
+      },
+      {
+        question: "Which vaccinations are required for GCC countries?",
+        answer:
+          "MMR (Measles, Mumps, Rubella) in two doses and Meningococcal vaccination are required. Our team will advise on the specific requirements for your destination country.",
+        order: 4,
+      },
+      {
+        question: "Is your center approved by GAMCA?",
+        answer:
+          "Yes, Unicare Medical is fully approved by GAMCA (GCC Approved Medical Centers Association) and all GCC health ministries including Saudi Arabia, UAE, Kuwait, Qatar, Bahrain, and Oman.",
+        order: 5,
+      },
+      {
+        question: "Can I check my report online?",
+        answer:
+          "Yes, you can check your medical report status online through our Report Search portal accessible from the navigation menu. You'll need your Patient ID and registered phone number.",
+        order: 6,
+      },
+    ];
+    for (const f of servicesFaqDefs) {
+      await strapi.documents(FAQ_UID).create({
+        data: { ...f, sitePage: servicesHeroDocId } as any,
+        status: "published",
+      });
+    }
+    strapi.log.info("[seed:services] Seeded FAQs linked to Hero (page=services).");
+  }
+
   strapi.log.info("[seed:services] Done. GET /api/services?populate=*");
 }
 
@@ -824,7 +1051,15 @@ async function enrichAboutMedia(strapi: Core.Strapi) {
     await strapi.documents(HERO_UID).update({
       documentId: hid,
       data: {
-        slideItems: deck.map((s) => ({ image: s.imageId, title: s.title, text: s.text })),
+        slideItems: deck.map((s) => ({
+          image: s.imageId,
+          title: s.title,
+          text: s.text,
+          ctaButtons: [
+            { label: "Book Appointment", href: "/book", variant: "primary" },
+            { label: "Our Services", href: "/services", variant: "secondary" },
+          ],
+        })),
       } as any,
       status: "published",
     });
@@ -952,9 +1187,93 @@ async function seedEquipmentPhase(strapi: Core.Strapi) {
   strapi.log.info("[seed:equipment] Done. GET /api/equipment-items?populate=*");
 }
 
+/** Post categories (blog/news scopes) + default author for seeded articles/news. */
+async function ensureBlogNewsTaxonomy(strapi: Core.Strapi): Promise<{ authorDocumentId?: string }> {
+  if ((await count(strapi, POST_CATEGORY_UID)) === 0) {
+    const newsSeeds = [
+      { name: "Announcement", slug: "announcement", sortOrder: 0 },
+      { name: "Equipment", slug: "equipment", sortOrder: 1 },
+      { name: "Regulation", slug: "regulation", sortOrder: 2 },
+      { name: "Notice", slug: "notice", sortOrder: 3 },
+      { name: "Guide", slug: "guide-news", sortOrder: 4 },
+    ];
+    for (const s of newsSeeds) {
+      await strapi.documents(POST_CATEGORY_UID).create({
+        data: { name: s.name, slug: s.slug, scope: "news", sortOrder: s.sortOrder } as any,
+        status: "published",
+      });
+    }
+    const blogSeeds = [
+      { name: "Guide", slug: "guide", sortOrder: 0 },
+      { name: "Tips", slug: "tips", sortOrder: 1 },
+      { name: "Education", slug: "education", sortOrder: 2 },
+      { name: "Technology", slug: "technology", sortOrder: 3 },
+    ];
+    for (const s of blogSeeds) {
+      await strapi.documents(POST_CATEGORY_UID).create({
+        data: { name: s.name, slug: s.slug, scope: "blog", sortOrder: s.sortOrder } as any,
+        status: "published",
+      });
+    }
+    strapi.log.info("[seed:taxonomy] Created post categories (blog + news scopes).");
+  }
+
+  let authorDocumentId: string | undefined;
+  if ((await count(strapi, AUTHOR_UID)) === 0) {
+    const a = await strapi.documents(AUTHOR_UID).create({
+      data: {
+        name: "Unicare Editorial",
+        slug: "unicare-editorial",
+        bio: "Clinic communications and medical education team.",
+      } as any,
+      status: "published",
+    });
+    authorDocumentId = (a as { documentId?: string }).documentId;
+    strapi.log.info("[seed:taxonomy] Created default author.");
+  } else {
+    const authors = await strapi.documents(AUTHOR_UID).findMany({ limit: 1 });
+    authorDocumentId = (authors[0] as { documentId?: string })?.documentId;
+  }
+
+  const navs = await strapi.documents(NAV_UID).findMany({ limit: 200 });
+  const hasBlog = (navs as Array<{ href?: string }>).some((n) => n.href === "/blog");
+  if (!hasBlog) {
+    await strapi.documents(NAV_UID).create({
+      data: { label: "Blog", href: "/blog", order: 5 } as any,
+      status: "published",
+    });
+    strapi.log.info("[seed:taxonomy] Added Blog navigation link.");
+  }
+
+  return { authorDocumentId };
+}
+
+function newsCategoryDocumentId(
+  allCats: Array<{ name?: string; scope?: string; documentId?: string }>,
+  label: string
+): string | undefined {
+  const row = allCats.find((c) => c.scope === "news" && c.name === label);
+  return row?.documentId;
+}
+
+function blogCategoryDocumentId(
+  allCats: Array<{ name?: string; scope?: string; documentId?: string }>,
+  label: string
+): string | undefined {
+  const row = allCats.find((c) => c.scope === "blog" && c.name === label);
+  return row?.documentId;
+}
+
 // ── Phase: news ────────────────────────────────────────────────
 
 async function seedNewsPhase(strapi: Core.Strapi) {
+  const { authorDocumentId } = await ensureBlogNewsTaxonomy(strapi);
+  const allCats = (await strapi.documents(POST_CATEGORY_UID).findMany({ limit: 200 })) as Array<{
+    name?: string;
+    scope?: string;
+    documentId?: string;
+  }>;
+
   if ((await count(strapi, NEWS_UID)) === 0) {
     const posts = [
       {
@@ -982,20 +1301,26 @@ async function seedNewsPhase(strapi: Core.Strapi) {
         img: "https://images.unsplash.com/photo-1530497610245-94d3c16cda28?w=800&h=500&fit=crop",
       },
     ];
+    let i = 0;
     for (const p of posts) {
       const imgId = await uploadImageFromUrl(strapi, p.img, `${p.slug}.jpg`, p.title);
+      const postCat = newsCategoryDocumentId(allCats, p.category);
       await strapi.documents(NEWS_UID).create({
         data: {
           title: p.title,
           slug: p.slug,
           excerpt: p.excerpt,
           date: p.date,
-          category: p.category,
+          ...(postCat ? { postCategory: postCat } : {}),
+          ...(authorDocumentId ? { author: authorDocumentId } : {}),
           image: imgId,
           content: richtext(`${p.excerpt} Full article body placeholder.`),
+          isFeatured: i === 0,
+          commentsOpen: true,
         } as any,
         status: "published",
       });
+      i += 1;
     }
   }
   const t = "News & Updates";
@@ -1008,6 +1333,13 @@ async function seedNewsPhase(strapi: Core.Strapi) {
 // ── Phase: blog ─────────────────────────────────────────────────
 
 async function seedBlogPhase(strapi: Core.Strapi) {
+  const { authorDocumentId } = await ensureBlogNewsTaxonomy(strapi);
+  const allCats = (await strapi.documents(POST_CATEGORY_UID).findMany({ limit: 200 })) as Array<{
+    name?: string;
+    scope?: string;
+    documentId?: string;
+  }>;
+
   if ((await count(strapi, ARTICLE_UID)) === 0) {
     const articles = [
       {
@@ -1035,20 +1367,26 @@ async function seedBlogPhase(strapi: Core.Strapi) {
         img: "https://images.unsplash.com/photo-1579154204601-01588f351e67?w=800&h=500&fit=crop",
       },
     ];
+    let j = 0;
     for (const a of articles) {
       const imgId = await uploadImageFromUrl(strapi, a.img, `${a.slug}.jpg`, a.title);
+      const postCat = blogCategoryDocumentId(allCats, a.category);
       await strapi.documents(ARTICLE_UID).create({
         data: {
           title: a.title,
           slug: a.slug,
           excerpt: a.excerpt,
           date: a.date,
-          category: a.category,
+          ...(postCat ? { postCategory: postCat } : {}),
+          ...(authorDocumentId ? { author: authorDocumentId } : {}),
           image: imgId,
           content: richtext(`${a.excerpt} Detailed article content placeholder.`),
+          isFeatured: j === 0,
+          commentsOpen: true,
         } as any,
         status: "published",
       });
+      j += 1;
     }
   }
   const t = "Health Resources";
@@ -1089,6 +1427,7 @@ export async function runPhasedContentSeed(strapi: Core.Strapi) {
   );
 
   try {
+    await ensureFaqSitePageLinks(strapi);
     for (const phase of phases) {
       strapi.log.info(`[seed] ---------- ${phase} ----------`);
       switch (phase) {
@@ -1123,6 +1462,7 @@ export async function runPhasedContentSeed(strapi: Core.Strapi) {
           break;
       }
     }
+    await ensureFaqSitePageLinks(strapi);
   } catch (err) {
     strapi.log.error("[seed] Phased content seed failed:", err);
   }

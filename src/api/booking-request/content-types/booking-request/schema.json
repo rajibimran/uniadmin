@@ -1,0 +1,59 @@
+{
+  "kind": "collectionType",
+  "collectionName": "booking_requests",
+  "info": {
+    "singularName": "booking-request",
+    "pluralName": "booking-requests",
+    "displayName": "Appointment booking",
+    "description": "Requests from the public Book page. Staff: set status, add notes, or delete. Confirmed/pending/rescheduled slots block double-booking; cancelled frees the slot."
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "patientName": {
+      "type": "string",
+      "required": true,
+      "maxLength": 120
+    },
+    "email": {
+      "type": "email",
+      "required": true
+    },
+    "phone": {
+      "type": "string",
+      "required": true,
+      "maxLength": 40
+    },
+    "serviceId": {
+      "type": "string",
+      "required": true,
+      "maxLength": 120
+    },
+    "serviceTitle": {
+      "type": "string",
+      "required": false,
+      "maxLength": 200
+    },
+    "appointmentDate": {
+      "type": "date",
+      "required": true
+    },
+    "timeSlot": {
+      "type": "string",
+      "required": true,
+      "maxLength": 80
+    },
+    "status": {
+      "type": "enumeration",
+      "enum": ["pending", "confirmed", "cancelled", "rescheduled"],
+      "default": "pending",
+      "required": true
+    },
+    "staffNotes": {
+      "type": "text",
+      "required": false
+    }
+  }
+}

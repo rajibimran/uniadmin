@@ -329,6 +329,13 @@ const apis = [
         question: { type: "string", required: true },
         answer: { type: "text", required: true },
         order: { type: "integer", "default": 0 },
+        sitePage: {
+          type: "relation",
+          relation: "manyToOne",
+          target: "api::hero.hero",
+          inversedBy: "faqs",
+          required: true,
+        },
       },
     },
   },

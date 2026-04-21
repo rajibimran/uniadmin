@@ -28,15 +28,200 @@
     "facebookUrl": { "type": "string", "required": false },
     "instagramUrl": { "type": "string", "required": false },
     "linkedinUrl": { "type": "string", "required": false },
+    "showBlogSection": {
+      "type": "boolean",
+      "default": true,
+      "required": false
+    },
+    "showNewsSection": {
+      "type": "boolean",
+      "default": true,
+      "required": false
+    },
+    "commentsEnabled": {
+      "type": "boolean",
+      "default": false,
+      "required": false
+    },
+    "contactFormToEmail": {
+      "type": "email",
+      "required": false
+    },
+    "contactFormSendConfirmation": {
+      "type": "boolean",
+      "default": true,
+      "required": false
+    },
+    "bookingFormToEmail": {
+      "type": "email",
+      "required": false
+    },
+    "bookingFormSendConfirmation": {
+      "type": "boolean",
+      "default": true,
+      "required": false
+    },
+    "smtpHost": {
+      "type": "string",
+      "required": false
+    },
+    "smtpPort": {
+      "type": "integer",
+      "default": 587,
+      "required": false
+    },
+    "smtpSecure": {
+      "type": "boolean",
+      "default": false,
+      "required": false
+    },
+    "smtpUsername": {
+      "type": "string",
+      "required": false
+    },
+    "smtpPassword": {
+      "type": "string",
+      "required": false
+    },
+    "emailFrom": {
+      "type": "email",
+      "required": false
+    },
     "defaultSeo": {
       "type": "component",
       "repeatable": false,
       "component": "seo.entry",
       "required": false
+    },
+    "footerBrandExtra": {
+      "type": "text",
+      "required": false
+    },
+    "footerColumns": {
+      "type": "component",
+      "repeatable": true,
+      "component": "site.footer-column",
+      "required": false
+    },
+    "footerCertStripTitle": {
+      "type": "string",
+      "required": false
+    },
+    "footerPrivacyLinkLabel": {
+      "type": "string",
+      "required": false
+    },
+    "footerCopyrightExtra": {
+      "type": "string",
+      "required": false
+    },
+    "footerMapPlaceholderLabel": {
+      "type": "string",
+      "required": false
+    },
+    "footerLegacyQuickTitle": {
+      "type": "string",
+      "required": false
+    },
+    "footerLegacyServicesTitle": {
+      "type": "string",
+      "required": false
+    },
+    "footerLegacyHelpTitle": {
+      "type": "string",
+      "required": false
+    },
+    "footerLegacyHelpBody": {
+      "type": "text",
+      "required": false
+    },
+    "quickContactSectionTitle": {
+      "type": "string",
+      "required": false
+    },
+    "quickContactSectionBody": {
+      "type": "text",
+      "required": false
+    },
+    "quickContactFormHeading": {
+      "type": "string",
+      "required": false
+    },
+    "quickContactSuccessHeading": {
+      "type": "string",
+      "required": false
+    },
+    "quickContactSuccessBody": {
+      "type": "text",
+      "required": false
+    },
+    "quickContactIframeTitle": {
+      "type": "string",
+      "required": false
     }
   },
   "config": {
     "metadatas": {
+      "contactFormToEmail": {
+        "edit": {
+          "label": "Contact form — staff inbox",
+          "description": "All website contact messages are saved in **Contact submission** and also emailed here. Leave empty to use the main **Email** field above."
+        }
+      },
+      "contactFormSendConfirmation": {
+        "edit": {
+          "label": "Contact form — send visitor confirmation",
+          "description": "When outbound mail is configured (fields below or optional server env), send the visitor a short “we received your message” email."
+        }
+      },
+      "bookingFormToEmail": {
+        "edit": {
+          "label": "Booking form — staff inbox",
+          "description": "New appointment requests are emailed here. Leave empty to use **Contact form — staff inbox**, then the main **Email**."
+        }
+      },
+      "bookingFormSendConfirmation": {
+        "edit": {
+          "label": "Booking form — send visitor confirmation",
+          "description": "When SMTP is configured, send the patient a short “we received your request” email."
+        }
+      },
+      "smtpHost": {
+        "edit": {
+          "label": "SMTP — host",
+          "description": "Mail server hostname (e.g. smtp.gmail.com). Leave empty to try server environment variable SMTP_HOST instead."
+        }
+      },
+      "smtpPort": {
+        "edit": {
+          "label": "SMTP — port",
+          "description": "Usually 587 (STARTTLS) or 465 (SSL)."
+        }
+      },
+      "smtpSecure": {
+        "edit": {
+          "label": "SMTP — use SSL/TLS",
+          "description": "Turn on for port 465 or when your provider requires implicit TLS."
+        }
+      },
+      "smtpUsername": {
+        "edit": {
+          "label": "SMTP — username",
+          "description": "Optional; required by many providers for authenticated SMTP."
+        }
+      },
+      "smtpPassword": {
+        "edit": {
+          "label": "SMTP — password / app password",
+          "description": "Stored in the database — never shown on the public website API. Prefer an app-specific password when your provider supports it."
+        }
+      },
+      "emailFrom": {
+        "edit": {
+          "label": "SMTP — From address",
+          "description": "Sender address for contact-form emails (must be allowed by your provider). If empty, falls back to SMTP username or server EMAIL_FROM."
+        }
+      },
       "logo": {
         "edit": {
           "label": "Logo (50x65px)",

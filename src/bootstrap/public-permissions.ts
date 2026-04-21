@@ -21,6 +21,8 @@ const COLLECTION_API_UIDS = [
   "api::navigation.navigation",
   "api::news-post.news-post",
   "api::article.article",
+  "api::post-category.post-category",
+  "api::author.author",
   "api::country-guideline.country-guideline",
   "api::country-flag.country-flag",
   "api::product.product",
@@ -39,6 +41,7 @@ const COLLECTION_API_UIDS = [
   "api::gallery-image.gallery-image",
   "api::hero.hero",
   "api::service.service",
+  "api::service-category.service-category",
 ] as const;
 
 /** Single types: controller exposes find only. */
@@ -61,4 +64,11 @@ export async function grantPublicContentApis(strapi: Core.Strapi) {
     await grantPublicPermission(strapi, `${uid}.find`);
     await grantPublicPermission(strapi, `${uid}.findOne`);
   }
+  await grantPublicPermission(strapi, "api::comment.comment.submit");
+  await grantPublicPermission(strapi, "api::comment.comment.approvedList");
+  await grantPublicPermission(strapi, "api::contact-submission.contact-submission.submit");
+  await grantPublicPermission(strapi, "api::booking-request.booking-request.submit");
+  await grantPublicPermission(strapi, "api::booking-request.booking-request.availability");
+  await grantPublicPermission(strapi, "api::lab-report-file.lab-report-file.download");
+  await grantPublicPermission(strapi, "api::lab-report-file.lab-report-file.staffLogin");
 }

@@ -2,7 +2,7 @@
   "collectionName": "components_hero_slides",
   "info": {
     "displayName": "Hero slide",
-    "description": "One hero carousel slide: image plus headline and text"
+    "description": "One hero carousel slide: image, headline, text, and optional CTAs for this slide only."
   },
   "options": {},
   "attributes": {
@@ -19,6 +19,12 @@
     "text": {
       "type": "text",
       "required": true
+    },
+    "ctaButtons": {
+      "type": "component",
+      "repeatable": true,
+      "component": "hero.cta-button",
+      "required": false
     }
   }
 }

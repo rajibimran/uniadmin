@@ -33,9 +33,10 @@
       "required": true
     },
     "category": {
-      "type": "enumeration",
-      "enum": ["Examination", "Imaging", "Laboratory", "Preventive"],
-      "required": true
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::service-category.service-category",
+      "inversedBy": "services"
     },
     "heroImage": {
       "type": "media",

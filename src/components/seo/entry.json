@@ -39,7 +39,7 @@
       "required": false
     },
     "structuredData": {
-      "type": "json",
+      "type": "text",
       "required": false
     },
     "noIndex": {
@@ -71,7 +71,7 @@
       "structuredData": {
         "edit": {
           "label": "JSON-LD (schema.org)",
-          "description": "Valid JSON object or array, e.g. {\"@context\":\"https://schema.org\",\"@type\":\"MedicalClinic\",...}"
+          "description": "Paste one JSON object or array as plain text (same as before). Must be valid JSON — use a JSON validator if unsure."
         },
         "list": { "label": "JSON-LD" }
       },

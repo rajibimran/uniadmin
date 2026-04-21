@@ -5,7 +5,7 @@
     "singularName": "hero",
     "pluralName": "heroes",
     "displayName": "Hero",
-    "description": "Per-page hero: title, subtitle, slide deck, CTAs"
+    "description": "Per-page hero: title, subtitle, slide deck. Put CTAs on each **Hero slide** (per-slide offers/links). Optional root CTAs below are a legacy fallback when a slide has none (e.g. promo video)."
   },
   "options": {
     "draftAndPublish": true
@@ -28,7 +28,8 @@
     "ctaButtons": {
       "type": "component",
       "repeatable": true,
-      "component": "hero.cta-button"
+      "component": "hero.cta-button",
+      "required": false
     },
     "promoVideo": {
       "type": "media",
@@ -41,6 +42,12 @@
       "repeatable": false,
       "component": "seo.entry",
       "required": false
+    },
+    "faqs": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::faq.faq",
+      "mappedBy": "sitePage"
     }
   },
   "config": {
@@ -48,7 +55,7 @@
       "slideItems": {
         "edit": {
           "label": "Slides",
-          "description": "Add slides in order. Each slide: image (~1600×900), title, and text shown when that slide is active."
+          "description": "Add slides in order. Each slide: image (~1600×900), title, text, and its own **CTA buttons** (unlimited per slide). Use root CTAs only as a fallback for slides with no buttons."
         },
         "list": { "label": "Slides" }
       }

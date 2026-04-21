@@ -44,10 +44,11 @@ export interface HeroCtaButton extends Struct.ComponentSchema {
 export interface HeroSlide extends Struct.ComponentSchema {
   collectionName: 'components_hero_slides';
   info: {
-    description: 'One hero carousel slide: image plus headline and text';
+    description: 'One hero carousel slide: image, headline, text, and optional CTAs for this slide only.';
     displayName: 'Hero slide';
   };
   attributes: {
+    ctaButtons: Schema.Attribute.Component<'hero.cta-button', true>;
     image: Schema.Attribute.Media<'images'> & Schema.Attribute.Required;
     text: Schema.Attribute.Text & Schema.Attribute.Required;
     title: Schema.Attribute.String & Schema.Attribute.Required;
@@ -74,7 +75,7 @@ export interface ScreeningProcessStep extends Struct.ComponentSchema {
   };
   attributes: {
     description: Schema.Attribute.Text & Schema.Attribute.Required;
-    details: Schema.Attribute.JSON;
+    detailLines: Schema.Attribute.Component<'service.simple-line', true>;
     estimatedTime: Schema.Attribute.String & Schema.Attribute.Required;
     title: Schema.Attribute.String & Schema.Attribute.Required;
   };
@@ -95,7 +96,7 @@ export interface SeoEntry extends Struct.ComponentSchema {
     openGraphImage: Schema.Attribute.Media<'images'>;
     openGraphImageAlt: Schema.Attribute.String;
     snippetForAiOverview: Schema.Attribute.Text;
-    structuredData: Schema.Attribute.JSON;
+    structuredData: Schema.Attribute.Text;
     twitterCard: Schema.Attribute.Enumeration<
       ['summary', 'summary_large_image']
     > &
@@ -176,6 +177,32 @@ export interface ServicesComparisonRow extends Struct.ComponentSchema {
   };
 }
 
+export interface SiteFooterColumn extends Struct.ComponentSchema {
+  collectionName: 'components_site_footer_columns';
+  info: {
+    description: 'Footer column: title, optional body, optional map, and/or links';
+    displayName: 'Footer column';
+  };
+  attributes: {
+    body: Schema.Attribute.Text;
+    links: Schema.Attribute.Component<'site.footer-link', true>;
+    showMap: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
+    title: Schema.Attribute.String & Schema.Attribute.Required;
+  };
+}
+
+export interface SiteFooterLink extends Struct.ComponentSchema {
+  collectionName: 'components_site_footer_links';
+  info: {
+    description: 'Label and path for a footer column link';
+    displayName: 'Footer link';
+  };
+  attributes: {
+    href: Schema.Attribute.String & Schema.Attribute.Required;
+    label: Schema.Attribute.String & Schema.Attribute.Required;
+  };
+}
+
 declare module '@strapi/strapi' {
   export module Public {
     export interface ComponentSchemas {
@@ -191,6 +218,8 @@ declare module '@strapi/strapi' {
       'service.simple-line': ServiceSimpleLine;
       'service.timeline-step': ServiceTimelineStep;
       'services.comparison-row': ServicesComparisonRow;
+      'site.footer-column': SiteFooterColumn;
+      'site.footer-link': SiteFooterLink;
     }
   }
 }

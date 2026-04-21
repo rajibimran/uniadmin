@@ -1,0 +1,43 @@
+{
+  "kind": "singleType",
+  "collectionName": "fitness_page",
+  "info": {
+    "singularName": "fitness-page",
+    "pluralName": "fitness-pages",
+    "displayName": "Fitness Page",
+    "description": "Optional disclaimer / notes below fitness criteria list"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "entryTitle": {
+      "type": "string",
+      "default": "Fitness Page",
+      "required": false,
+      "maxLength": 120
+    },
+    "disclaimer": {
+      "type": "text",
+      "required": false
+    },
+    "seo": {
+      "type": "component",
+      "repeatable": false,
+      "component": "seo.entry",
+      "required": false
+    }
+  },
+  "config": {
+    "metadatas": {
+      "entryTitle": {
+        "edit": {
+          "label": "Entry title",
+          "description": "Label shown in the Strapi header. Public site uses disclaimer below."
+        },
+        "list": { "label": "Entry title" }
+      }
+    }
+  }
+}

@@ -13,6 +13,14 @@
   "pluginOptions": {},
   "attributes": {
     "title": { "type": "string", "required": false },
+    "intro": {
+      "type": "text",
+      "required": false
+    },
+    "contactBlock": {
+      "type": "text",
+      "required": false
+    },
     "sections": {
       "type": "component",
       "repeatable": true,

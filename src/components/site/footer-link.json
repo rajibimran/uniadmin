@@ -1,0 +1,12 @@
+{
+  "collectionName": "components_site_footer_links",
+  "info": {
+    "displayName": "Footer link",
+    "description": "Label and path for a footer column link"
+  },
+  "options": {},
+  "attributes": {
+    "label": { "type": "string", "required": true },
+    "href": { "type": "string", "required": true }
+  }
+}

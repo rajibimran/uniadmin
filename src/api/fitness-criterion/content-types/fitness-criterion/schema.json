@@ -19,9 +19,11 @@
       "type": "text",
       "required": true
     },
-    "items": {
-      "type": "json",
-      "required": true
+    "itemLines": {
+      "type": "component",
+      "repeatable": true,
+      "component": "service.simple-line",
+      "required": false
     }
   }
 }

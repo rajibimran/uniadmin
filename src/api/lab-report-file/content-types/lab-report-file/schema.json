@@ -1,0 +1,44 @@
+{
+  "kind": "collectionType",
+  "collectionName": "lab_report_files",
+  "info": {
+    "singularName": "lab-report-file",
+    "pluralName": "lab-report-files",
+    "displayName": "Lab report PDF",
+    "description": "PDF reports linked by passport number and phone for the public Report Check portal. Files live in private/lab-reports on the server."
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "passportNumber": {
+      "type": "string",
+      "required": true,
+      "maxLength": 64
+    },
+    "phoneDigits": {
+      "type": "string",
+      "required": true,
+      "maxLength": 20
+    },
+    "originalFileName": {
+      "type": "string",
+      "maxLength": 255
+    },
+    "storedFileName": {
+      "type": "string",
+      "required": true,
+      "maxLength": 200,
+      "private": true
+    },
+    "mimeType": {
+      "type": "string",
+      "default": "application/pdf",
+      "maxLength": 120
+    },
+    "fileSize": {
+      "type": "integer"
+    }
+  }
+}

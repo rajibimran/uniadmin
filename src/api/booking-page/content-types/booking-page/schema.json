@@ -12,12 +12,34 @@
   },
   "pluginOptions": {},
   "attributes": {
-    "timeSlots": { "type": "json", "required": false },
+    "entryTitle": {
+      "type": "string",
+      "default": "Booking Page",
+      "required": false,
+      "maxLength": 120
+    },
+    "timeSlotLines": {
+      "type": "component",
+      "repeatable": true,
+      "component": "service.simple-line",
+      "required": false
+    },
     "seo": {
       "type": "component",
       "repeatable": false,
       "component": "seo.entry",
       "required": false
+    }
+  },
+  "config": {
+    "metadatas": {
+      "entryTitle": {
+        "edit": {
+          "label": "Entry title",
+          "description": "Label shown in the Strapi header for this single type. Safe to leave as default; not used by the public booking page."
+        },
+        "list": { "label": "Entry title" }
+      }
     }
   }
 }

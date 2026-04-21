@@ -130,3 +130,7 @@ dist
 build
 .strapi-updater.json
 .strapi-cloud.json
+
+# Private lab report PDFs (uploaded via /api/lab-report-files/upload)
+private/lab-reports/*
+!private/lab-reports/.gitkeep

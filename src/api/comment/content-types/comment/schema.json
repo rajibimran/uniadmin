@@ -1,0 +1,36 @@
+{
+  "kind": "collectionType",
+  "collectionName": "comments",
+  "info": {
+    "singularName": "comment",
+    "pluralName": "comments",
+    "displayName": "Comment",
+    "description": "Public submissions; approve in admin before they appear on the site."
+  },
+  "options": { "draftAndPublish": false },
+  "pluginOptions": {},
+  "attributes": {
+    "postType": {
+      "type": "enumeration",
+      "enum": ["article", "news-post"],
+      "required": true
+    },
+    "targetSlug": { "type": "string", "required": true },
+    "authorName": { "type": "string", "required": true },
+    "authorEmail": { "type": "email", "required": false },
+    "body": { "type": "text", "required": true },
+    "isApproved": { "type": "boolean", "default": false },
+    "parent": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::comment.comment",
+      "inversedBy": "replies"
+    },
+    "replies": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::comment.comment",
+      "mappedBy": "parent"
+    }
+  }
+}

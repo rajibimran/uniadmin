@@ -9,6 +9,11 @@
     "title": { "type": "string", "required": true },
     "description": { "type": "text", "required": true },
     "estimatedTime": { "type": "string", "required": true },
-    "details": { "type": "json", "required": false }
+    "detailLines": {
+      "type": "component",
+      "repeatable": true,
+      "component": "service.simple-line",
+      "required": false
+    }
   }
 }

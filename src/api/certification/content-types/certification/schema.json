@@ -13,13 +13,21 @@
   "attributes": {
     "name": {
       "type": "string",
-      "required": true
+      "required": false
     },
     "logo": {
       "type": "media",
       "multiple": false,
       "required": false,
       "allowedTypes": ["images"]
+    },
+    "shortDescription": {
+      "type": "text",
+      "required": false
+    },
+    "verificationUrl": {
+      "type": "string",
+      "required": false
     },
     "order": {
       "type": "integer",
@@ -28,12 +36,33 @@
   },
   "config": {
     "metadatas": {
+      "name": {
+        "edit": {
+          "label": "Name",
+          "description": "Optional label when no logo is uploaded, or as secondary text with the logo."
+        },
+        "list": { "label": "Name" }
+      },
       "logo": {
         "edit": {
           "label": "Logo (180x60px)",
           "description": "Optional badge; about 180×60px, ≤60 KB. SVG or PNG."
         },
         "list": { "label": "Logo (180x60px)" }
+      },
+      "shortDescription": {
+        "edit": {
+          "label": "Short description",
+          "description": "Optional; shown on hover (title) and for screen readers. Keep to one or two sentences."
+        },
+        "list": { "label": "Short description" }
+      },
+      "verificationUrl": {
+        "edit": {
+          "label": "Verification link",
+          "description": "Optional full URL (https://…). When set, the logo or name becomes a clickable link (opens in a new tab)."
+        },
+        "list": { "label": "Verification link" }
       }
     }
   }

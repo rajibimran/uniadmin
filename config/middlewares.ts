@@ -6,13 +6,13 @@ const extraOrigins = (process.env.FRONTEND_URLS ?? '')
   .filter(Boolean);
 
 const config: Core.Config.Middlewares = [
+  'global::sanitize-site-config',
   'strapi::logger',
   'strapi::errors',
   'strapi::security',
   {
     name: 'strapi::cors',
     config: {
-      enabled: true,
       origin: [
         'http://localhost:8080',
         'http://127.0.0.1:8080',
@@ -22,7 +22,14 @@ const config: Core.Config.Middlewares = [
   },
   'strapi::poweredBy',
   'strapi::query',
-  'strapi::body',
+  {
+    name: 'strapi::body',
+    config: {
+      formidable: {
+        maxFileSize: 35 * 1024 * 1024,
+      },
+    },
+  },
   'strapi::session',
   'strapi::favicon',
   'strapi::public',

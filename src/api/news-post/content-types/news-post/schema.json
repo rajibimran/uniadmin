@@ -39,24 +39,31 @@
       "type": "media",
       "multiple": false,
       "required": false,
-      "allowedTypes": [
-        "images"
-      ]
+      "allowedTypes": ["images"]
     },
     "date": {
       "type": "date",
       "required": true
     },
-    "category": {
-      "type": "enumeration",
-      "enum": [
-        "Announcement",
-        "Equipment",
-        "Regulation",
-        "Notice",
-        "Guide"
-      ],
-      "required": true
+    "postCategory": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::post-category.post-category",
+      "inversedBy": "newsPosts"
+    },
+    "author": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::author.author",
+      "inversedBy": "newsPosts"
+    },
+    "isFeatured": {
+      "type": "boolean",
+      "default": false
+    },
+    "commentsOpen": {
+      "type": "boolean",
+      "default": true
     }
   },
   "config": {
@@ -74,6 +81,20 @@
           "description": "Meta title & description, canonical, Open Graph image (Media), Twitter card, JSON-LD, robots, AI/overview snippet. Optional: leave empty for defaults; fill for this story."
         },
         "list": { "label": "SEO" }
+      },
+      "isFeatured": {
+        "edit": {
+          "label": "Featured (news)",
+          "description": "Only one news post should be featured at a time; saving clears others automatically."
+        },
+        "list": { "label": "Featured" }
+      },
+      "commentsOpen": {
+        "edit": {
+          "label": "Allow comments",
+          "description": "Also requires **Comments enabled** in Site Config."
+        },
+        "list": { "label": "Comments" }
       }
     }
   }
